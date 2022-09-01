@@ -1,13 +1,11 @@
 import './style.css';
-import { getCurrentWeather,getWeatherStatus,getSunriseSunset } from './api.js';
+import { getWeather } from './api.js';
 
-getNewWeather();
+// getNewWeather();
 
-async function getNewWeather() {
-    let stuff = await getCurrentWeather();
-    console.log(stuff.name);
-    let stuff2 = await getWeatherStatus();
-    console.log(stuff2);
-    let stuff3 = await getSunriseSunset();
-    console.log(stuff3.sunrise, stuff3.sunset);
-}
+// async function getNewWeather() {
+//     let { main } = await getWeather();
+//     console.log(main);
+// }
+
+const submitBtn = document.querySelector('#submitLocation');

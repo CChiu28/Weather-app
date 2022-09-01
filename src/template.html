@@ -10,10 +10,22 @@
 <body>
     <main>
         <div class="inputBox">
-            <input type="text" id="location" name="location" required>
+            <input type="text" id="autocomplete" placeholder="Enter a location">
             <button type="submit" id="submitLocation" name="submitLocation">Submit</button>
         </div>
     </main>
     <script src="./index.bundle.js"></script>
+    <script>
+        function initAutocomplete() {
+            const input = document.querySelector('#autocomplete');
+            const autocomplete = new google.maps.places.Autocomplete(
+                input,
+                {
+                    types: ['geocode']
+                }
+            );
+        }
+    </script>
+    <script async src="https://maps.googleapis.com/maps/api/js?key=[REDACTED]&libraries=places&callback=initAutocomplete"></script>
 </body>
 </html>
