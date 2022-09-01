@@ -1,32 +1,20 @@
-const lat = 40.606348;
-const lon = -74.003313;
+const OPENWEATHER_KEY = process.env.OPENWEATHER_KEY;
 
-async function getWeather() {
-    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.OPENWEATHER_KEY}&units=imperial`);
+async function getWeather(lat,lon) {
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_KEY}&units=imperial`);
+    const weather = await response.json();
+    return weather;
+}
+
+async function getCoordinates(location) {
+    const response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=1&appid=${OPENWEATHER_KEY}`);
     const data = await response.json();
-    return data;
+    const coords = data[0];
+    // console.log(coords);
+    return coords;
 }
 
-// async function getCurrentWeather() {
-//     const { main, name } = await getWeather();
-//     // console.log(main);
-//     return { main, name };
-// }
-
-// async function getWeatherStatus() {
-//     const { weather } = await getWeather();
-//     // console.log(weather);
-//     return weather;
-// }
-
-// async function getSunriseSunset() {
-//     const { sys } = await getWeather();
-//     return sys;
-// }
-
-async function getGeocode(location) {
-    
-}
 export {
-    getWeather
+    getWeather,
+    getCoordinates
 };
