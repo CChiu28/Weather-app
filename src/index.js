@@ -1,5 +1,6 @@
-// import './style.css';
+import './style.css';
 import { getCoordinates, getWeather } from './api.js';
+import { formatWeather } from './formatWeather';
 
 // getNewWeather();
 
@@ -18,14 +19,10 @@ submitBtn.addEventListener('click',(e)=> {
 })
 
 async function getWeatherAndCoords() {
+    // console.log(locationInput.value);
     const { lat, lon } = await getCoordinates(locationInput.value);
     // console.log(lat, lon);
     const weather = await getWeather(lat,lon);
     // console.log(weather);
     formatWeather(weather);
-}
-
-function formatWeather(data) {
-    const { main, sys, weather, name } = data;
-    console.log(main, sys, weather[0], name);
 }
