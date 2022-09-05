@@ -1,4 +1,6 @@
 import * as utilities from './utilities.js';
+import Chart from 'chart.js/auto';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 function formatWeather(data) {
     const { current, daily, timezone_offset } = data;
@@ -70,20 +72,52 @@ function formatDailyWeatherData(daily, tz) {
         card.append(cardDay);
         forecast.append(card);
     });
+    createChart(daily,tz);
 }
 
-// function getDate(time,tz) {
-//     const unixTime = (time+tz)*1000;
-//     const date = new Date(unixTime);
-//     console.log(date);
-//     const options = {
-//         weekday: 'short',
-//         day: 'numeric'
-//     };
-//     // const day = new Intl.DateTimeFormat('en-US',options).format(date);
-//     const day = date.toLocaleDateString(undefined, options);
-//     return day;
-// }
+function createChart(daily, tz) {
+    const temps = daily.map(({ temp }) => temp);
+    const times = daily.map(({ dt }) => dt);
+    let days = [];
+    times.forEach(time => days.push(utilities.getDate(time,tz)));
+    const ctx = document.querySelector('#forecastChart');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: days,
+            datasets: [{
+                datalabels: {
+                    color: 'black'
+                },
+                data: days.map((day,index) => {
+                    return [temps[index].min,temps[index].max];
+                }),
+                backgroundColor: 'red',
+            }]
+        },
+        plugins: [ChartDataLabels],
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    enabled: false
+                },
+                datalabels: {
+                    align: 'end',
+                    anchor: 'end',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    display: false
+                }
+            }
+        }
+    });
+}
 
 export {
     formatWeather
