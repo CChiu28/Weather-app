@@ -14,13 +14,15 @@ import { formatWeather } from './formatWeather';
 const submitBtn = document.querySelector('#submitLocation');
 const locationInput = document.querySelector('#autocomplete');
 const forecast = document.querySelector('#forecastWeather');
+const forecastChart = document.querySelector('#forecastChart');
 
 
 submitBtn.addEventListener('click',(e)=> {
     e.preventDefault();
-    if (forecast.hasChildNodes()) {
-        while (forecast.firstChild)
+    if (forecast.hasChildNodes()||forecastChart.hasChildNodes()) {
+        while (forecast.firstChild) {
             forecast.removeChild(forecast.lastChild);
+        }
     }
     getWeatherAndCoords();
 })

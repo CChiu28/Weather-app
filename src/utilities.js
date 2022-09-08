@@ -7,7 +7,16 @@ export function getDate(time,tz) {
         weekday: 'short',
         day: 'numeric'
     };
-    // const day = new Intl.DateTimeFormat('en-US',options).format(date);
-    const day = date.toLocaleDateString(undefined, options);
+    const day = new Intl.DateTimeFormat(undefined,options).format(date);
+    // return date.toLocaleDateString(undefined, options);
     return day;
+}
+
+export function getTime(time, tz) {
+    const unixTime = (time+tz)*1000;
+    const date = new Date(unixTime);
+    const options = {
+        timeStyle: 'short'
+    }
+    return new Intl.DateTimeFormat(undefined,options).format(date);
 }
