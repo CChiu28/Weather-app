@@ -2,7 +2,7 @@ import './style.css';
 import './scss/style.scss';
 // import * as bootstrap from 'bootstrap';
 import { getCoordinates, getWeather } from './api.js';
-import { formatWeather } from './formatWeather';
+import { formatWeather } from './formatWeather.js';
 
 // getNewWeather();
 
@@ -19,7 +19,7 @@ const forecastChart = document.querySelector('#forecastChart');
 
 submitBtn.addEventListener('click',(e)=> {
     e.preventDefault();
-    if (forecast.hasChildNodes()||forecastChart.hasChildNodes()) {
+    if (forecast.hasChildNodes()) {
         while (forecast.firstChild) {
             forecast.removeChild(forecast.lastChild);
         }
