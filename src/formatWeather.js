@@ -1,4 +1,5 @@
 import * as utilities from './utilities.js';
+import { WeatherDataCharts } from './charts.js';
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -7,8 +8,8 @@ function formatWeather(data) {
     // console.log(current);
     formatMainWeatherData(current);
     formatCurrentWeatherData(current);
-    formatHourlyWeatherData(hourly, timezone_offset);
     formatDailyWeatherData(daily, timezone_offset);
+    formatHourlyWeatherData(hourly, timezone_offset);
     // formatWeatherMap();
 }
 
@@ -22,7 +23,7 @@ function formatMainWeatherData(current) {
     const currCondition = document.querySelector('#overview-condition');
     currCondition.innerHTML = weather[0].description;
     const conditionImg = document.querySelector('#overview-img');
-    conditionImg.src = `http://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
+    conditionImg.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
     conditionImg.alt = weather[0].description;
     conditionImg.title = weather[0].description;
 }
@@ -52,7 +53,7 @@ function formatHourlyWeatherData(hourly, tz) {
     //     img.src = `http://openweathermap.org/img/wn/${weather[0].icon}@2x.png`
     //     return [img, utilities.getTime(dt,tz)];
     // });
-    // console.log(time);
+    // console.log(temps);
     hourly.forEach(({ temp, pop, weather, dt}) => {
         // const tmp = `${Math.round(temp)}`;
 
@@ -64,7 +65,7 @@ function formatHourlyWeatherData(hourly, tz) {
 
         tmp.innerText = `${Math.round(temp)}`;
         rain.innerText = `${Math.round(pop*100)}% rain`;
-        icon.src = `http://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
+        icon.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
         icon.alt = weather[0].description;
         icon.title = weather[0].description;
         time.innerText = utilities.getTime(dt,tz);
@@ -72,6 +73,9 @@ function formatHourlyWeatherData(hourly, tz) {
         ctx.append(div);
     })
     // utilities.createChart(hourly, tz, 'hourly');
+    const hourlyCtx = document.querySelector('#hourlyChart');
+    let hourlyWeatherChart = new WeatherDataCharts(hourly,tz,hourlyCtx,'hourly');
+    hourlyWeatherChart.createChartjs();
 }
 
 function formatDailyWeatherData(daily, tz) {
@@ -93,7 +97,7 @@ function formatDailyWeatherData(daily, tz) {
         cardTemp.innerHTML = `${Math.round(temp.max)}/${Math.round(temp.min)}`;
         rain.innerHTML = `${Math.round(pop*100)}% rain`;
         cardDay.innerHTML = utilities.getDate(dt,tz).day;
-        condition.src = `http://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
+        condition.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
         condition.alt = weather[0].description;
         condition.title = weather[0].description;
         cardBody.append(cardTemp);
@@ -104,112 +108,19 @@ function formatDailyWeatherData(daily, tz) {
         forecast.append(card);
     });
     // utilities.createChart(daily,tz, 'daily');
-
     const ctx = document.querySelector('#chart2');
-    const times = daily.map(({ dt }) => dt);
-    const temps = daily.map(({ temp }) => temp);
+    let dailyWeatherChart = new WeatherDataCharts(daily,tz,ctx,'daily');
+    dailyWeatherChart.createChartjs();
+
     const weather = daily.map(({weather}) => weather);
-    const precip = daily.map(({ pop }) => Math.round(pop*100));
-    let days = [];
-    times.forEach(time => days.push(utilities.getDate(time,tz).day));
-    const chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: days,
-            datasets: [{
-                // datalabels: {
-                //     color: 'black'
-                // },
-                data: days.map((day,index) => {
-                    return [Math.round(temps[index].min),Math.round(temps[index].max)];
-                }),
-                backgroundColor: 'red',
-                yAxisID: 'tempAxis',
-                datalabels: {
-                    // align: 'end',
-                    // anchor: 'end',
-                    labels: {
-                        max: {
-                            color: 'blue',
-                            align: 'end',
-                            anchor: 'end',
-                            formatter: (value,ctx) => {
-                                return ctx.dataset.data[ctx.dataIndex][1];
-                            }
-                        },
-                        value: {
-                            anchor: 'start',
-                            align: 'start',
-                            color: 'green',
-                            formatter: (value,ctx) => {
-                                return ctx.dataset.data[ctx.dataIndex][0];
-                            }
-                        }
-                    }
-                }
-            },
-            {
-                data: precip,
-                backgroundColor: 'blue',
-                yAxisID: 'rainAxis',
-                datalabels: {
-                    labels: {
-                        value: {
-                            anchor: 'start',
-                            align: 'start',
-                            color: 'blue'
-                        }
-                    }
-                }
-            }]
-        },
-        plugins: [ChartDataLabels],
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    enabled: false
-                }
-            },
-            scales: {
-                tempAxis: {
-                    position: 'left',
-                    beginAtZero: false,
-                    display: false,
-                    ticks: {
-                        display: false
-                    },
-                    suggestedMax: Math.max(...temps)+2,
-                    suggestedMin: Math.min(...temps)-1
-                },
-                rainAxis: {
-                    position: 'right',
-                    ticks: {
-                        display: false
-                    },
-                    suggestedMax: Math.max(...precip)
-                }
-                // x: {
-                //     ticks: {
-                //         display: false
-                //     }
-                // }
-            }
-        }
-    });
-    
-    console.log(temps);
     const c2ico = document.querySelector('#chart2icons');
     weather.map((weather) => {
         let img = new Image();
-        img.src = `http://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
+        img.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
         img.alt = weather[0].description;
         img.title = weather[0].description;
         // img.setAttribute('id','icon');
+        img.classList.add('img-fluid');
         c2ico.append(img);
     })
 }

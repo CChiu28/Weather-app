@@ -1,5 +1,5 @@
-import * as amChart from '@amcharts/amcharts5';
-import * as am5xy from '@amcharts/amcharts5/xy';
+// import * as amChart from '@amcharts/amcharts5';
+// import * as am5xy from '@amcharts/amcharts5/xy';
 
 function getDate(time,tz) {
     // console.log(time, tz);
@@ -34,7 +34,7 @@ function createChart(daily, tz, style) {
     const temps = daily.map(({ temp }) => temp);
     const times = daily.map(({ dt }) => dt);
     const icons = daily.map(({ weather }) => {
-        return `http://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
+        return `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
     });
     const entries = [];
     times.forEach(time => {
