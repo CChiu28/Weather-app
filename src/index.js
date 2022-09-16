@@ -1,6 +1,6 @@
 import './style.css';
 import './scss/style.scss';
-// import * as bootstrap from 'bootstrap';
+import bootstrap from 'bootstrap';
 import { getCoordinates, getWeather } from './api.js';
 import { formatWeather } from './formatWeather.js';
 

@@ -10,6 +10,7 @@ function formatWeather(data) {
     formatCurrentWeatherData(current);
     formatDailyWeatherData(daily, timezone_offset);
     formatHourlyWeatherData(hourly, timezone_offset);
+    getWeatherPicture(current);
     // formatWeatherMap();
 }
 
@@ -76,6 +77,21 @@ function formatHourlyWeatherData(hourly, tz) {
     const hourlyCtx = document.querySelector('#hourlyChart');
     let hourlyWeatherChart = new WeatherDataCharts(hourly,tz,hourlyCtx,'hourly');
     hourlyWeatherChart.createChartjs();
+
+    const weather = hourly.map(({weather}) => weather);
+    let hourlyChartIcons = document.querySelector('#hourly-chart-icons');
+    weather.map((weather) => {
+        let div = document.createElement('div');
+        div.style.display = 'table-cell';
+        let img = new Image();
+        img.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
+        img.alt = weather[0].description;
+        img.title = weather[0].description;
+        // img.setAttribute('id','icon');
+        img.setAttribute('class','img-fluid position-relative');
+        div.append(img);
+        hourlyChartIcons.append(div);
+    });
 }
 
 function formatDailyWeatherData(daily, tz) {
@@ -115,14 +131,28 @@ function formatDailyWeatherData(daily, tz) {
     const weather = daily.map(({weather}) => weather);
     const c2ico = document.querySelector('#chart2icons');
     weather.map((weather) => {
+        let div = document.createElement('div');
+        div.style.maxWidth = '100%';
         let img = new Image();
         img.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
         img.alt = weather[0].description;
         img.title = weather[0].description;
         // img.setAttribute('id','icon');
-        img.classList.add('img-fluid');
-        c2ico.append(img);
-    })
+        img.setAttribute('class','img-fluid position-relative');
+        div.append(img);
+        c2ico.append(div);
+    });
+}
+
+async function getWeatherPicture(current) {
+    const { weather } = current;
+    let img = new Image();
+    img.src = await `https://source.unsplash.com/random/?${weather[0].description}`;
+    img.alt = weather[0].description;
+    img.title = weather[0].description;
+    img.style.objectFit = 'cover';
+    const div = document.querySelector('#parallax-pic');
+    div.append(img);
 }
 
 export {

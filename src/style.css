@@ -2,24 +2,35 @@
     color: red;
 }
 
+#parallax-pic {
+    height: 500px;
+    overflow: hidden;
+}
 #icons {
     max-width: 100%;
     height: auto;
 }
-#chart2 {
+/* #chart2 {
     overflow: auto;
     position: relative;
-}
-#chart2icons {
+    width: 800px;
+} */
+/* #chart2icons {
     position: relative;
-    /* display: flex; */
+    display: flex;
     justify-content: space-around;
-    /* width: 100%;
-    height: auto; */
-}
-#hourlyChart2 {
+    width: 100%;
+    height: auto;
     overflow: auto;
+} */
+#hourlyChart2 {
     position: relative;
+    width: 4800px;
+    height: 300px;
+}
+
+#hourly-chart-icons {
+    width: 4800px;
 }
 /*
 #dailyChart {
@@ -28,10 +39,7 @@
     overflow: auto;
 } */
 #chart-wrapper {
-    overflow: auto;
-    position: relative;
-    max-width: 100%;
-    height: auto;
+    height: 300px;
 }
 
 #forecastWeather {

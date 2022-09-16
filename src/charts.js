@@ -44,40 +44,45 @@ class WeatherDataCharts {
 
     #getDailyOrHourlyData(days) {
         if (this.type==='daily') {
+            const gradient = this.ctx.getContext('2d').createLinearGradient(0,0,0,400);
+            gradient.addColorStop(0,'hsla(32, 93%, 55%, 1)');
+            gradient.addColorStop(1, 'hsla(60, 69%, 75%, 1)');
             const data = [{
-                data: this.#temps.map((tmp) => {
-                        return [Math.round(tmp.min), Math.round(tmp.max)];
-                    }
-                ),
-                type: 'bar',
-                backgroundColor: 'red',
-                yAxisID: 'tempAxis',
-                datalabels: {
-                    labels: {
-                        max: {
-                            color: 'blue',
-                            align: 'end',
-                            anchor: 'end',
-                            formatter: (value,ctx) => {
-                                return ctx.dataset.data[ctx.dataIndex][1];
-                            }
-                        },
-                        value: {
-                            anchor: 'start',
-                            align: 'start',
-                            color: 'green',
-                            formatter: (value,ctx) => {
-                                return ctx.dataset.data[ctx.dataIndex][0];
+                    data: this.#temps.map((tmp) => {
+                            return [Math.round(tmp.min), Math.round(tmp.max)];
+                        }
+                    ),
+                    type: 'bar',
+                    backgroundColor: gradient,
+                    yAxisID: 'tempAxis',
+                    maxBarThickness: 25,
+                    datalabels: {
+                        labels: {
+                            max: {
+                                color: 'blue',
+                                align: 'end',
+                                anchor: 'end',
+                                formatter: (value,ctx) => {
+                                    return ctx.dataset.data[ctx.dataIndex][1];
+                                }
+                            },
+                            value: {
+                                anchor: 'start',
+                                align: 'start',
+                                color: 'green',
+                                formatter: (value,ctx) => {
+                                    return ctx.dataset.data[ctx.dataIndex][0];
+                                }
                             }
                         }
                     }
-                }
                 },
                 {
                     data: this.#precip,
                     type: 'bar',
                     backgroundColor: 'blue',
                     yAxisID: 'rainAxis',
+                    maxBarThickness: 25,
                     datalabels: {
                         display: (ctx) => {
                             return ctx.dataset.data[ctx.dataIndex] > 0 ? 'auto' : false;
@@ -94,12 +99,15 @@ class WeatherDataCharts {
             ];
             return data;
         } else {
+            const gradient = this.ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(250,174,50,1)');   
+            gradient.addColorStop(1, 'rgba(250,174,50,0)');
             const data = [{
                 data: days.map((d,index) => {
                     return Math.round(this.#temps[index]);
                 }),
                 type: 'line',
-                backgroundColor: 'yellow',
+                backgroundColor: gradient,
                 borderColor: 'orange',
                 datalabels: {
                     labels: {
@@ -111,7 +119,7 @@ class WeatherDataCharts {
                     }
                 },
                 tension: 0.2,
-                fill: true
+                fill: true,
             }];
             console.log(data);
             return data;
@@ -121,8 +129,7 @@ class WeatherDataCharts {
     #getDailyOrHourlyOptions() {
         if (this.type==='daily') {
             const config = {
-                responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         display: false
@@ -173,8 +180,7 @@ class WeatherDataCharts {
             return config;
         } else {
             const config = {
-                responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         display: false
@@ -185,7 +191,8 @@ class WeatherDataCharts {
                 },
                 layout: {
                     padding: {
-                        bottom: 30
+                        left: 50,
+                        right: 50
                     }
                 },
                 scales: {
@@ -198,7 +205,7 @@ class WeatherDataCharts {
                             display: false,
                             drawTicks: false
                         },
-                        suggestedMax: Math.max(...this.#temps)+2,
+                        suggestedMax: Math.max(...this.#temps)+3,
                         suggestedMin: Math.min(...this.#temps)-2
                     }
                 }
