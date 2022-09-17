@@ -2,7 +2,7 @@ import './style.css';
 import './scss/style.scss';
 import bootstrap from 'bootstrap';
 import { getCoordinates, getWeather } from './api.js';
-import { formatWeather } from './formatWeather.js';
+import { renderWeather } from './renderWeather.js';
 
 // getNewWeather();
 
@@ -16,8 +16,7 @@ const locationInput = document.querySelector('#autocomplete');
 const forecast = document.querySelector('#forecastWeather');
 const forecastChart = document.querySelector('#forecastChart');
 
-
-submitBtn.addEventListener('click',(e)=> {
+submitBtn.addEventListener('click', (e) => {
     e.preventDefault();
     if (forecast.hasChildNodes()) {
         while (forecast.firstChild) {
@@ -25,7 +24,7 @@ submitBtn.addEventListener('click',(e)=> {
         }
     }
     getWeatherAndCoords();
-})
+});
 
 async function getWeatherAndCoords() {
     // console.log(locationInput.value);
@@ -33,5 +32,5 @@ async function getWeatherAndCoords() {
     // console.log(lat, lon);
     const weather = await getWeather(lat,lon);
     // console.log(weather);
-    formatWeather(weather);
+    renderWeather(weather);
 }

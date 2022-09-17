@@ -13,11 +13,17 @@ class WeatherDataCharts {
     #times;
     #temps;
     #precip;
+    #feelsLike;
+    #wind;
+    #chart;
 
     createChartjs() {
         this.#times = this.weather.map(({ dt }) => dt);
         this.#temps = this.weather.map(({ temp }) => temp);
         this.#precip = this.weather.map(({ pop }) => Math.round(pop*100));
+        this.#feelsLike = this.weather.map(({ feels_like }) => feels_like);
+        this.#wind = this.weather.map(({ wind_speed }) => Math.round(wind_speed));
+
         let days = [];
         this.#times.forEach(time => {
             if (this.type==='daily')
@@ -25,7 +31,7 @@ class WeatherDataCharts {
             else days.push(utilities.getDate(time,this.tz).time);
         });
 
-        const chart = new Chart(this.ctx, {
+        this.#chart = new Chart(this.ctx, {
             type: this.#getTypeOfChart(),
             data: {
                 labels: days,
@@ -56,6 +62,8 @@ class WeatherDataCharts {
                     backgroundColor: gradient,
                     yAxisID: 'tempAxis',
                     maxBarThickness: 25,
+                    borderRadius: Number.MAX_VALUE,
+                    borderSkipped: false,
                     datalabels: {
                         labels: {
                             max: {
@@ -98,32 +106,7 @@ class WeatherDataCharts {
                 }
             ];
             return data;
-        } else {
-            const gradient = this.ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(250,174,50,1)');   
-            gradient.addColorStop(1, 'rgba(250,174,50,0)');
-            const data = [{
-                data: days.map((d,index) => {
-                    return Math.round(this.#temps[index]);
-                }),
-                type: 'line',
-                backgroundColor: gradient,
-                borderColor: 'orange',
-                datalabels: {
-                    labels: {
-                        value: {
-                            anchor: 'end',
-                            align: 'end',
-                            color: 'orange'
-                        }
-                    }
-                },
-                tension: 0.2,
-                fill: true,
-            }];
-            console.log(data);
-            return data;
-        }
+        } else return [this.#getWeatherData('temp')];
     }
 
     #getDailyOrHourlyOptions() {
@@ -210,9 +193,117 @@ class WeatherDataCharts {
                     }
                 }
             };
-            console.log(config);
             return config;
         }
+    }
+
+    updateChart(info) {
+        this.#chart.data.datasets.pop();
+        this.#chart.data.datasets.push(this.#getWeatherData(info));
+        this.#chart.update();
+    }
+
+    #getWeatherData(info) {
+        let data = {};
+        switch (info) {
+            case 'temp':
+                const tempGradient = this.ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+                tempGradient.addColorStop(0, 'rgba(250,174,50,1)');   
+                tempGradient.addColorStop(1, 'rgba(250,174,50,0)');
+                data = {
+                    data: this.#temps.map((tmp) => {
+                        return Math.round(tmp);
+                    }),
+                    type: 'line',
+                    backgroundColor: tempGradient,
+                    borderColor: 'orange',
+                    datalabels: {
+                        labels: {
+                            value: {
+                                anchor: 'end',
+                                align: 'end',
+                                color: 'orange'
+                            }
+                        }
+                    },
+                    tension: 0.2,
+                    fill: true,
+                };
+                break;
+            case 'precip':
+                const precipGradient = this.ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+                precipGradient.addColorStop(0, 'hsla(232, 100%, 57%, 1)');   
+                precipGradient.addColorStop(1, 'hsla(206, 100%, 85%, 1)');
+                data = {
+                    data: this.#precip.map((val) => {
+                        return val;
+                    }),
+                    type: 'line',
+                    backgroundColor: precipGradient,
+                    borderColor: 'blue',
+                    datalabels: {
+                        labels: {
+                            value: {
+                                anchor: 'end',
+                                align: 'end',
+                                color: 'blue'
+                            }
+                        }
+                    },
+                    tension: 0.2,
+                    fill: true,
+                };
+                break;
+            case 'feels-like':
+                const feelsLikeGradient = this.ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+                feelsLikeGradient.addColorStop(0, 'rgba(250,174,50,1)');   
+                feelsLikeGradient.addColorStop(1, 'rgba(250,174,50,0)');
+                data = {
+                    data: this.#feelsLike.map((val) => {
+                        return Math.round(val);
+                    }),
+                    type: 'line',
+                    backgroundColor: feelsLikeGradient,
+                    borderColor: 'orange',
+                    datalabels: {
+                        labels: {
+                            value: {
+                                anchor: 'end',
+                                align: 'end',
+                                color: 'orange'
+                            }
+                        }
+                    },
+                    tension: 0.2,
+                    fill: true,
+                };
+                break;
+            case 'wind':
+                const windGradient = this.ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+                windGradient.addColorStop(0, 'hsla(0, 0%, 33%, 1)');   
+                windGradient.addColorStop(1, 'hsla(0, 0%, 82%, 1)');
+                data = {
+                    data: this.#wind.map((val) => {
+                        return val;
+                    }),
+                    type: 'bar',
+                    backgroundColor: windGradient,
+                    borderColor: 'gray',
+                    datalabels: {
+                        labels: {
+                            value: {
+                                anchor: 'end',
+                                align: 'end',
+                                color: 'black'
+                            }
+                        }
+                    },
+                    tension: 0.2,
+                    fill: true,
+                };
+                break;
+        }
+        return data;
     }
 }
 

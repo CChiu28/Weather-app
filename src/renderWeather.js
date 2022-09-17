@@ -1,20 +1,18 @@
 import * as utilities from './utilities.js';
 import { WeatherDataCharts } from './charts.js';
-import Chart from 'chart.js/auto';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-function formatWeather(data) {
+async function renderWeather(data) {
     const { current, daily, timezone_offset, hourly } = data;
     // console.log(current);
-    formatMainWeatherData(current);
-    formatCurrentWeatherData(current);
-    formatDailyWeatherData(daily, timezone_offset);
-    formatHourlyWeatherData(hourly, timezone_offset);
-    getWeatherPicture(current);
+    await renderWeatherHeaderImage(current);
+    renderMainWeatherData(current);
+    renderCurrentWeatherData(current);
+    renderDailyWeatherData(daily, timezone_offset);
+    renderHourlyWeatherData(hourly, timezone_offset);
     // formatWeatherMap();
 }
 
-function formatMainWeatherData(current) {
+function renderMainWeatherData(current) {
     const { temp, weather } = current;
     const currTemp = document.querySelector('#overview-temp');
     currTemp.innerHTML = Math.round(temp);
@@ -29,7 +27,7 @@ function formatMainWeatherData(current) {
     conditionImg.title = weather[0].description;
 }
 
-function formatCurrentWeatherData(current) {
+function renderCurrentWeatherData(current) {
     const { feels_like, pressure, humidity, clouds, wind_speed, visibility } = current;
     const feelsLikeDOM = document.querySelector('#current-feels-like');
     feelsLikeDOM.innerHTML = Math.round(feels_like);
@@ -45,16 +43,16 @@ function formatCurrentWeatherData(current) {
     visDOM.innerHTML = `${visibility} meters`;
 }
 
-function formatHourlyWeatherData(hourly, tz) {
+function renderHourlyWeatherData(hourly, tz) {
     const ctx = document.querySelector('#hourlyDiv');
-    // const { dt, temp, weather, pop, rain } = hourly;
-    // const temps = hourly.map(({ temp, pop }) => ({'temp': Math.round(temp), 'rain':pop*100}));
-    // const time = hourly.map(({ weather, dt }) => {
-    //     const img = new Image();
-    //     img.src = `http://openweathermap.org/img/wn/${weather[0].icon}@2x.png`
-    //     return [img, utilities.getTime(dt,tz)];
-    // });
-    // console.log(temps);
+    const hourlyBtn = document.querySelectorAll('.hourly-btn');
+
+    hourlyBtn.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            hourlyWeatherChart.updateChart(btn.value);
+        })
+    })
+
     hourly.forEach(({ temp, pop, weather, dt}) => {
         // const tmp = `${Math.round(temp)}`;
 
@@ -69,7 +67,7 @@ function formatHourlyWeatherData(hourly, tz) {
         icon.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
         icon.alt = weather[0].description;
         icon.title = weather[0].description;
-        time.innerText = utilities.getTime(dt,tz);
+        time.innerText = utilities.getDate(dt,tz).time;
         div.append(tmp,icon,rain,time);
         ctx.append(div);
     })
@@ -94,15 +92,15 @@ function formatHourlyWeatherData(hourly, tz) {
     });
 }
 
-function formatDailyWeatherData(daily, tz) {
+function renderDailyWeatherData(daily, tz) {
     // console.log(daily);
     const forecast = document.querySelector('#forecastWeather');
-    daily.forEach(day => {
+    daily.forEach((day) => {
         const { temp, weather, pop, dt } = day;
         const card = document.createElement('div');
         const cardBody = document.createElement('div');
         const cardDay = document.createElement('div');
-        const cardTemp = document.createElement('span')
+        const cardTemp = document.createElement('span');
         const rain = document.createElement('span');
         const condition = document.createElement('img');
         card.classList.add('card');
@@ -144,17 +142,12 @@ function formatDailyWeatherData(daily, tz) {
     });
 }
 
-async function getWeatherPicture(current) {
+async function renderWeatherHeaderImage(current) {
     const { weather } = current;
-    let img = new Image();
-    img.src = await `https://source.unsplash.com/random/?${weather[0].description}`;
-    img.alt = weather[0].description;
-    img.title = weather[0].description;
-    img.style.objectFit = 'cover';
     const div = document.querySelector('#parallax-pic');
-    div.append(img);
+    div.style.backgroundImage = `url("https://source.unsplash.com/random/?${weather[0].description}")`;
 }
 
 export {
-    formatWeather
+    renderWeather
 }
