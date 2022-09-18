@@ -13,7 +13,7 @@ async function getWeather(lat,lon) {
 }
 
 async function getCoordinates(location) {
-    const url = `http://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=1&appid=${OPENWEATHER_KEY}`;
+    const url = `https://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=1&appid=${OPENWEATHER_KEY}`;
     let coords;
     try {
         const response = await fetch(url);

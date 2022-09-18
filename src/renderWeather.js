@@ -168,6 +168,36 @@ class RenderWeatherData {
         this.#hourlyWeatherChart.destroy();
     }
 
+    changeImperialMetric(tmp) {
+        let { current, daily, hourly } = this.weatherData;
+        current.temp = utilities.convertFahrenheitCelsius(current.temp, tmp);
+        current.feels_like = utilities.convertFahrenheitCelsius(current.feels_like, tmp);
+        current.wind_speed = utilities.convertImperialMetric(current.wind_speed,tmp);
+        console.log(this.weatherData.current);
+
+        this.weatherData.daily.forEach(({ temp, wind_speed }) => {
+            temp.min = utilities.convertFahrenheitCelsius(temp.min,tmp);
+            temp.max = utilities.convertFahrenheitCelsius(temp.max,tmp);
+            wind_speed = utilities.convertImperialMetric(wind_speed,tmp);
+        });
+        console.log(this.weatherData.daily);
+
+        this.weatherData.hourly.forEach(({ temp, feels_like, wind_speed }) => {
+            temp = utilities.convertFahrenheitCelsius(temp,tmp);
+            wind_speed = utilities.convertImperialMetric(wind_speed,tmp);
+            feels_like = utilities.convertFahrenheitCelsius(feels_like,tmp);
+            // console.log(temp, wind_speed, feels_like);
+        });
+        console.log(this.weatherData.hourly);
+
+        if (this.#dailyWeatherChart || this.#hourlyWeatherChart) {
+            this.deleteCharts();
+            document.querySelector('#hourly-chart-icons').innerHTML = '';
+            document.querySelector('#chart2icons').innerHTML = '';
+        }
+        this.renderWeather();
+    }
+
     get dailyWeatherChart() {
         return this.#dailyWeatherChart;
     }

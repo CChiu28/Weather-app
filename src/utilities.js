@@ -76,5 +76,7 @@ function convertFahrenheitCelsius(num, tmp) {
 
 export {
     getDate,
-    changeTemp
+    changeTemp,
+    convertFahrenheitCelsius,
+    convertImperialMetric
 }

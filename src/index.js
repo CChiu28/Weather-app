@@ -39,8 +39,8 @@ hourlyBtn.forEach((btn) => {
 
 changeTempBtn.addEventListener('click', () => {
     if (changeTempBtn.checked)
-        changeTemp(render, 'C');
-    else changeTemp(render, 'F');
+        render.changeImperialMetric('C');
+    else render.changeImperialMetric('F');
 });
 
 async function getWeatherAndCoords() {
