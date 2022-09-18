@@ -2,7 +2,8 @@ import './style.css';
 import './scss/style.scss';
 import bootstrap from 'bootstrap';
 import { getCoordinates, getWeather } from './api.js';
-import { renderWeather } from './renderWeather.js';
+import { renderWeather, RenderWeatherData } from './renderWeather.js';
+import { changeTemp } from './utilities';
 
 // getNewWeather();
 
@@ -15,15 +16,31 @@ const submitBtn = document.querySelector('#submitLocation');
 const locationInput = document.querySelector('#autocomplete');
 const forecast = document.querySelector('#forecastWeather');
 const forecastChart = document.querySelector('#forecastChart');
+const hourlyBtn = document.querySelectorAll('.hourly-btn');
+const changeTempBtn = document.querySelector('#temperature-toggle');
+let render;
 
 submitBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    if (forecast.hasChildNodes()) {
+    if (render) {
         while (forecast.firstChild) {
             forecast.removeChild(forecast.lastChild);
         }
+        render.deleteCharts();
     }
     getWeatherAndCoords();
+});
+
+hourlyBtn.forEach((btn) => {
+    btn.addEventListener('click', () => {
+        render.updateCharts(btn.value);
+    })
+});
+
+changeTempBtn.addEventListener('click', () => {
+    if (changeTempBtn.checked)
+        changeTemp(render, 'C');
+    else changeTemp(render, 'F');
 });
 
 async function getWeatherAndCoords() {
@@ -32,5 +49,6 @@ async function getWeatherAndCoords() {
     // console.log(lat, lon);
     const weather = await getWeather(lat,lon);
     // console.log(weather);
-    renderWeather(weather);
+    render = new RenderWeatherData(weather);
+    render.renderWeather();
 }

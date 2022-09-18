@@ -1,153 +1,183 @@
 import * as utilities from './utilities.js';
 import { WeatherDataCharts } from './charts.js';
 
-async function renderWeather(data) {
-    const { current, daily, timezone_offset, hourly } = data;
-    // console.log(current);
-    await renderWeatherHeaderImage(current);
-    renderMainWeatherData(current);
-    renderCurrentWeatherData(current);
-    renderDailyWeatherData(daily, timezone_offset);
-    renderHourlyWeatherData(hourly, timezone_offset);
-    // formatWeatherMap();
-}
+class RenderWeatherData {
+    constructor(weatherData) {
+        this.weatherData = weatherData;
+    }
+    
+    #hourlyWeatherChart;
+    #dailyWeatherChart;
 
-function renderMainWeatherData(current) {
-    const { temp, weather } = current;
-    const currTemp = document.querySelector('#overview-temp');
-    currTemp.innerHTML = Math.round(temp);
-    const location = document.querySelector('#overview-location');
-    const locationFromInput = document.querySelector('#autocomplete');
-    location.innerHTML = locationFromInput.value;
-    const currCondition = document.querySelector('#overview-condition');
-    currCondition.innerHTML = weather[0].description;
-    const conditionImg = document.querySelector('#overview-img');
-    conditionImg.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
-    conditionImg.alt = weather[0].description;
-    conditionImg.title = weather[0].description;
-}
+    renderWeather() {
+        const { current, daily, timezone_offset, hourly } = this.weatherData;
+        // console.log(current);
+        this.#renderWeatherHeaderImage(current);
+        this.#renderMainWeatherData(current);
+        this.#renderCurrentWeatherData(current);
+        this.#renderDailyWeatherData(daily, timezone_offset);
+        this.#renderHourlyWeatherData(hourly, timezone_offset);
+        // formatWeatherMap();
+    }
 
-function renderCurrentWeatherData(current) {
-    const { feels_like, pressure, humidity, clouds, wind_speed, visibility } = current;
-    const feelsLikeDOM = document.querySelector('#current-feels-like');
-    feelsLikeDOM.innerHTML = Math.round(feels_like);
-    const pressureDOM = document.querySelector('#current-pressure');
-    pressureDOM.innerHTML = `${pressure} hPa`;
-    const humidityDOM = document.querySelector('#current-humidity');
-    humidityDOM.innerHTML = `${Math.round(humidity)}% humidity`;
-    const cloudDOM = document.querySelector('#current-cloud');
-    cloudDOM.innerHTML = `${Math.round(clouds)}% clouds`;
-    const windSpeedDOM = document.querySelector('#current-wind-speed');
-    windSpeedDOM.innerHTML = `${Math.round(wind_speed)} mph`;
-    const visDOM = document.querySelector('#current-visibility');
-    visDOM.innerHTML = `${visibility} meters`;
-}
+    #renderMainWeatherData(current) {
+        const { temp, weather } = current;
+        const currTemp = document.querySelector('#overview-temp');
+        const location = document.querySelector('#overview-location');
+        const locationFromInput = document.querySelector('#autocomplete');
+        const currCondition = document.querySelector('#overview-condition');
+        const conditionImg = document.querySelector('#overview-img');
+        
+        currTemp.textContent = Math.round(temp);
+        location.textContent = locationFromInput.value;
+        currCondition.textContent = weather[0].description;
+        conditionImg.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
+        conditionImg.alt = weather[0].description;
+        conditionImg.title = weather[0].description;
+    }
 
-function renderHourlyWeatherData(hourly, tz) {
-    const ctx = document.querySelector('#hourlyDiv');
-    const hourlyBtn = document.querySelectorAll('.hourly-btn');
+    #renderCurrentWeatherData(current) {
+        const { feels_like, pressure, humidity, clouds, wind_speed, visibility } = current;
 
-    hourlyBtn.forEach((btn) => {
-        btn.addEventListener('click', () => {
-            hourlyWeatherChart.updateChart(btn.value);
-        })
-    })
+        const feelsLikeDOM = document.querySelector('#current-feels-like');
+        const pressureDOM = document.querySelector('#current-pressure');
+        const humidityDOM = document.querySelector('#current-humidity');
+        const cloudDOM = document.querySelector('#current-cloud');
+        const windSpeedDOM = document.querySelector('#current-wind-speed');
+        const visDOM = document.querySelector('#current-visibility');
 
-    hourly.forEach(({ temp, pop, weather, dt}) => {
-        // const tmp = `${Math.round(temp)}`;
+        pressureDOM.textContent = `${pressure} hPa`;
+        feelsLikeDOM.textContent = Math.round(feels_like);
+        humidityDOM.textContent = `${Math.round(humidity)}% humidity`;
+        cloudDOM.textContent = `${Math.round(clouds)}% clouds`;
+        windSpeedDOM.textContent = `${Math.round(wind_speed)} mph`;
+        visDOM.textContent = `${visibility} meters`;
+    }
 
-        const div = document.createElement('div');
-        const tmp = document.createElement('span');
-        const rain = document.createElement('span');
-        const icon = document.createElement('img');
-        const time = document.createElement('span');
+    #renderHourlyWeatherData(hourly, tz) {
+        const ctx = document.querySelector('#hourlyDiv');
+        // const hourlyBtn = document.querySelectorAll('.hourly-btn');
 
-        tmp.innerText = `${Math.round(temp)}`;
-        rain.innerText = `${Math.round(pop*100)}% rain`;
-        icon.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
-        icon.alt = weather[0].description;
-        icon.title = weather[0].description;
-        time.innerText = utilities.getDate(dt,tz).time;
-        div.append(tmp,icon,rain,time);
-        ctx.append(div);
-    })
-    // utilities.createChart(hourly, tz, 'hourly');
-    const hourlyCtx = document.querySelector('#hourlyChart');
-    let hourlyWeatherChart = new WeatherDataCharts(hourly,tz,hourlyCtx,'hourly');
-    hourlyWeatherChart.createChartjs();
+        // hourlyBtn.forEach((btn) => {
+        //     btn.addEventListener('click', () => {
+        //         this.#hourlyWeatherChart.updateChart(btn.value);
+        //     })
+        // })
 
-    const weather = hourly.map(({weather}) => weather);
-    let hourlyChartIcons = document.querySelector('#hourly-chart-icons');
-    weather.map((weather) => {
-        let div = document.createElement('div');
-        div.style.display = 'table-cell';
-        let img = new Image();
-        img.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
-        img.alt = weather[0].description;
-        img.title = weather[0].description;
-        // img.setAttribute('id','icon');
-        img.setAttribute('class','img-fluid position-relative');
-        div.append(img);
-        hourlyChartIcons.append(div);
-    });
-}
+        // hourly.forEach(({ temp, pop, weather, dt}) => {
+        //     // const tmp = `${Math.round(temp)}`;
 
-function renderDailyWeatherData(daily, tz) {
-    // console.log(daily);
-    const forecast = document.querySelector('#forecastWeather');
-    daily.forEach((day) => {
-        const { temp, weather, pop, dt } = day;
-        const card = document.createElement('div');
-        const cardBody = document.createElement('div');
-        const cardDay = document.createElement('div');
-        const cardTemp = document.createElement('span');
-        const rain = document.createElement('span');
-        const condition = document.createElement('img');
-        card.classList.add('card');
-        cardBody.classList.add('card-body');
-        cardDay.classList.add('card-footer');
-        cardTemp.classList.add('card-text');
-        rain.classList.add('card-text');
-        cardTemp.innerHTML = `${Math.round(temp.max)}/${Math.round(temp.min)}`;
-        rain.innerHTML = `${Math.round(pop*100)}% rain`;
-        cardDay.innerHTML = utilities.getDate(dt,tz).day;
-        condition.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
-        condition.alt = weather[0].description;
-        condition.title = weather[0].description;
-        cardBody.append(cardTemp);
-        cardBody.append(condition);
-        cardBody.append(rain);
-        card.append(cardBody);
-        card.append(cardDay);
-        forecast.append(card);
-    });
-    // utilities.createChart(daily,tz, 'daily');
-    const ctx = document.querySelector('#chart2');
-    let dailyWeatherChart = new WeatherDataCharts(daily,tz,ctx,'daily');
-    dailyWeatherChart.createChartjs();
+        //     const div = document.createElement('div');
+        //     const tmp = document.createElement('span');
+        //     const rain = document.createElement('span');
+        //     const icon = document.createElement('img');
+        //     const time = document.createElement('span');
 
-    const weather = daily.map(({weather}) => weather);
-    const c2ico = document.querySelector('#chart2icons');
-    weather.map((weather) => {
-        let div = document.createElement('div');
-        div.style.maxWidth = '100%';
-        let img = new Image();
-        img.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
-        img.alt = weather[0].description;
-        img.title = weather[0].description;
-        // img.setAttribute('id','icon');
-        img.setAttribute('class','img-fluid position-relative');
-        div.append(img);
-        c2ico.append(div);
-    });
-}
+        //     tmp.innerText = `${Math.round(temp)}`;
+        //     rain.innerText = `${Math.round(pop*100)}% rain`;
+        //     icon.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
+        //     icon.alt = weather[0].description;
+        //     icon.title = weather[0].description;
+        //     time.innerText = utilities.getDate(dt,tz).time;
+        //     div.append(tmp,icon,rain,time);
+        //     ctx.append(div);
+        // })
+        // utilities.createChart(hourly, tz, 'hourly');
+        const hourlyCtx = document.querySelector('#hourlyChart');
+        this.#hourlyWeatherChart = new WeatherDataCharts(hourly,tz,hourlyCtx,'hourly');
+        this.#hourlyWeatherChart.createChartjs();
 
-async function renderWeatherHeaderImage(current) {
-    const { weather } = current;
-    const div = document.querySelector('#parallax-pic');
-    div.style.backgroundImage = `url("https://source.unsplash.com/random/?${weather[0].description}")`;
+        const weather = hourly.map(({weather}) => weather);
+        let hourlyChartIcons = document.querySelector('#hourly-chart-icons');
+        weather.map((weather) => {
+            let div = document.createElement('div');
+            div.style.display = 'table-cell';
+            let img = new Image();
+            img.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
+            img.alt = weather[0].description;
+            img.title = weather[0].description;
+            // img.setAttribute('id','icon');
+            img.setAttribute('class','img-fluid position-relative');
+            div.append(img);
+            hourlyChartIcons.append(div);
+        });
+    }
+
+    #renderDailyWeatherData(daily, tz) {
+        // console.log(daily);
+        // const forecast = document.querySelector('#forecastWeather');
+        // daily.forEach((day) => {
+        //     const { temp, weather, pop, dt } = day;
+        //     const card = document.createElement('div');
+        //     const cardBody = document.createElement('div');
+        //     const cardDay = document.createElement('div');
+        //     const cardTemp = document.createElement('span');
+        //     const rain = document.createElement('span');
+        //     const condition = document.createElement('img');
+        //     card.classList.add('card');
+        //     cardBody.classList.add('card-body');
+        //     cardDay.classList.add('card-footer');
+        //     cardTemp.classList.add('card-text');
+        //     rain.classList.add('card-text');
+        //     cardTemp.textContent = `${Math.round(temp.max)}/${Math.round(temp.min)}`;
+        //     rain.textContent = `${Math.round(pop*100)}% rain`;
+        //     cardDay.textContent = utilities.getDate(dt,tz).day;
+        //     condition.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
+        //     condition.alt = weather[0].description;
+        //     condition.title = weather[0].description;
+        //     cardBody.append(cardTemp);
+        //     cardBody.append(condition);
+        //     cardBody.append(rain);
+        //     card.append(cardBody);
+        //     card.append(cardDay);
+        //     forecast.append(card);
+        // });
+        // utilities.createChart(daily,tz, 'daily');
+        const ctx = document.querySelector('#chart2');
+        this.#dailyWeatherChart = new WeatherDataCharts(daily,tz,ctx,'daily');
+        this.#dailyWeatherChart.createChartjs();
+
+        const weather = daily.map(({weather}) => weather);
+        const c2ico = document.querySelector('#chart2icons');
+        weather.map((weather) => {
+            let div = document.createElement('div');
+            div.style.maxWidth = '100%';
+            let img = new Image();
+            img.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
+            img.alt = weather[0].description;
+            img.title = weather[0].description;
+            // img.setAttribute('id','icon');
+            img.setAttribute('class','img-fluid position-relative');
+            div.append(img);
+            c2ico.append(div);
+        });
+    }
+
+    #renderWeatherHeaderImage(current) {
+        const { weather } = current;
+        const div = document.querySelector('#parallax-pic');
+        div.style.backgroundImage = `url("https://source.unsplash.com/random/?${weather[0].description}")`;
+    }
+
+    updateCharts(val) {
+        this.#hourlyWeatherChart.updateChart(val);
+    }
+
+    deleteCharts() {
+        this.#dailyWeatherChart.destroy();
+        this.#hourlyWeatherChart.destroy();
+    }
+
+    get dailyWeatherChart() {
+        return this.#dailyWeatherChart;
+    }
+
+    get hourlyWeatherChart() {
+        return this.#hourlyWeatherChart;
+    }
+
 }
 
 export {
-    renderWeather
+    RenderWeatherData
 }

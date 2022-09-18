@@ -8,21 +8,22 @@ async function getWeather(lat,lon) {
         return weather;
     } catch (err) {
         // do extra stuff here
-        console.log(err);
+        console.log('bad', err);
     }
 }
 
 async function getCoordinates(location) {
     const url = `http://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=1&appid=${OPENWEATHER_KEY}`;
+    let coords;
     try {
         const response = await fetch(url);
         const data = await response.json();
-        const coords = data[0];
-        return coords;
+        coords = data[0];
     } catch (err) {
         // do extra stuff here
-        console.log(err);
+        console.log('bad', err);
     }
+    return coords;
 }
 
 export {

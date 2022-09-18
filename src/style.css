@@ -1,5 +1,5 @@
-:root {
-    background: gray;
+.body {
+    background-color: gray;
 }
 
 .test {
@@ -8,15 +8,19 @@
 
 #parallax-pic {
     height: 500px;
-    overflow: hidden;
+    /* overflow: hidden; */
     background-attachment: fixed;
     background-size: cover;
 }
 
-#icons {
+#location-div {
+    margin-left: auto;
+    margin-right: auto;
+}
+/* #icons {
     max-width: 100%;
     height: auto;
-}
+} */
 /* #chart2 {
     overflow: auto;
     position: relative;
@@ -59,9 +63,11 @@
     /* display: flex; */
 }
 
-/* .container {
+.card {
+    padding: 10px;
+    margin: 10px;
+}
 
-} */
 div {
     border: 1px solid red;
 }

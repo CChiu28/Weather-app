@@ -16,6 +16,7 @@ class WeatherDataCharts {
     #feelsLike;
     #wind;
     #chart;
+    #days = [];
 
     createChartjs() {
         this.#times = this.weather.map(({ dt }) => dt);
@@ -24,18 +25,18 @@ class WeatherDataCharts {
         this.#feelsLike = this.weather.map(({ feels_like }) => feels_like);
         this.#wind = this.weather.map(({ wind_speed }) => Math.round(wind_speed));
 
-        let days = [];
+        // let days = [];
         this.#times.forEach(time => {
             if (this.type==='daily')
-                days.push(utilities.getDate(time,this.tz).day);
-            else days.push(utilities.getDate(time,this.tz).time);
+                this.#days.push(utilities.getDate(time,this.tz).day);
+            else this.#days.push(utilities.getDate(time,this.tz).time);
         });
 
         this.#chart = new Chart(this.ctx, {
             type: this.#getTypeOfChart(),
             data: {
-                labels: days,
-                datasets: this.#getDailyOrHourlyData(days)
+                labels: this.#days,
+                datasets: this.#getDailyOrHourlyData()
             },
             plugins: [ChartDataLabels],
             options: this.#getDailyOrHourlyOptions()
@@ -48,63 +49,9 @@ class WeatherDataCharts {
         else return 'line';
     }
 
-    #getDailyOrHourlyData(days) {
-        if (this.type==='daily') {
-            const gradient = this.ctx.getContext('2d').createLinearGradient(0,0,0,400);
-            gradient.addColorStop(0,'hsla(32, 93%, 55%, 1)');
-            gradient.addColorStop(1, 'hsla(60, 69%, 75%, 1)');
-            const data = [{
-                    data: this.#temps.map((tmp) => {
-                            return [Math.round(tmp.min), Math.round(tmp.max)];
-                        }
-                    ),
-                    type: 'bar',
-                    backgroundColor: gradient,
-                    yAxisID: 'tempAxis',
-                    maxBarThickness: 25,
-                    borderRadius: Number.MAX_VALUE,
-                    borderSkipped: false,
-                    datalabels: {
-                        labels: {
-                            max: {
-                                color: 'blue',
-                                align: 'end',
-                                anchor: 'end',
-                                formatter: (value,ctx) => {
-                                    return ctx.dataset.data[ctx.dataIndex][1];
-                                }
-                            },
-                            value: {
-                                anchor: 'start',
-                                align: 'start',
-                                color: 'green',
-                                formatter: (value,ctx) => {
-                                    return ctx.dataset.data[ctx.dataIndex][0];
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    data: this.#precip,
-                    type: 'bar',
-                    backgroundColor: 'blue',
-                    yAxisID: 'rainAxis',
-                    maxBarThickness: 25,
-                    datalabels: {
-                        display: (ctx) => {
-                            return ctx.dataset.data[ctx.dataIndex] > 0 ? 'auto' : false;
-                        },
-                        labels: {
-                            value: {
-                                anchor: 'start',
-                                align: 'start',
-                                color: 'blue'
-                            }
-                        }
-                    }
-                }
-            ];
+    #getDailyOrHourlyData(info) {
+        if (this.type==='daily' || info==='daily') {
+            const data = [this.#getWeatherData('dailyPrecip'), this.#getWeatherData('daily')];
             return data;
         } else return [this.#getWeatherData('temp')];
     }
@@ -123,7 +70,8 @@ class WeatherDataCharts {
                 },
                 layout: {
                     padding: {
-                        bottom: 30
+                        bottom: 30,
+                        top: 30
                     }
                 },
                 scales: {
@@ -175,7 +123,8 @@ class WeatherDataCharts {
                 layout: {
                     padding: {
                         left: 50,
-                        right: 50
+                        right: 50,
+                        top: 30
                     }
                 },
                 scales: {
@@ -198,7 +147,74 @@ class WeatherDataCharts {
     }
 
     updateChart(info) {
+        // console.log(this.#chart.scales);
+        // let scales = this.#chart.scales.y;
         this.#chart.data.datasets.pop();
+        if (info==='precip') {
+            this.#chart.options.scales = {
+                y: {
+                    ticks: {
+                        display: false
+                    },
+                    grid: {
+                        display: false,
+                        drawTicks: false
+                    },
+                    suggestedMax: 100
+                }
+            }
+        } else if (info!='daily') {
+            this.#chart.options.scales = {
+                y: {
+                    beginAtZero: false,
+                    ticks: {
+                        display: false
+                    },
+                    grid: {
+                        display: false,
+                        drawTicks: false
+                    },
+                    suggestedMax: Math.max(...this.#temps)+3,
+                    suggestedMin: Math.min(...this.#temps)-2
+                }
+            }
+        } else if (info==='daily') {
+            this.#chart.data.datasets.pop();
+            this.#chart.data.datasets.push(this.#getWeatherData('dailyPrecip'));
+            this.#chart.options.scales = {
+                daysAxis: {
+                    position: 'top',
+                    grid: {
+                        drawTicks: false
+                    }
+                },
+                tempAxis: {
+                    position: 'left',
+                    beginAtZero: false,
+                    // display: false,
+                    ticks: {
+                        display: false,
+                    },
+                    grid: {
+                        drawTicks: false,
+                        display: false
+                    },
+                    suggestedMax: Math.max(...this.#temps.map(tmp => tmp.max))+2,
+                    suggestedMin: Math.min(...this.#temps.map(tmp => tmp.min))-2
+                },
+                rainAxis: {
+                    position: 'right',
+                    ticks: {
+                        display: false
+                    },
+                    grid: {
+                        drawTicks: false,
+                        display: false
+                    },
+                    suggestedMax: 100
+                }
+            }
+        }
         this.#chart.data.datasets.push(this.#getWeatherData(info));
         this.#chart.update();
     }
@@ -302,8 +318,81 @@ class WeatherDataCharts {
                     fill: true,
                 };
                 break;
+            case 'daily':
+                const dailyGradient = this.ctx.getContext('2d').createLinearGradient(0,0,0,400);
+                dailyGradient.addColorStop(0,'hsla(32, 93%, 55%, 1)');
+                dailyGradient.addColorStop(1, 'hsla(60, 69%, 75%, 1)');
+                data = {
+                    data: this.#temps.map((tmp) => {
+                            return [Math.round(tmp.min), Math.round(tmp.max)];
+                        }
+                    ),
+                    type: 'bar',
+                    backgroundColor: dailyGradient,
+                    yAxisID: 'tempAxis',
+                    maxBarThickness: 25,
+                    borderRadius: Number.MAX_VALUE,
+                    borderSkipped: false,
+                    datalabels: {
+                        labels: {
+                            max: {
+                                color: 'blue',
+                                align: 'end',
+                                anchor: 'end',
+                                formatter: (value,ctx) => {
+                                    return ctx.dataset.data[ctx.dataIndex][1];
+                                }
+                            },
+                            value: {
+                                anchor: 'start',
+                                align: 'start',
+                                color: 'green',
+                                formatter: (value,ctx) => {
+                                    return ctx.dataset.data[ctx.dataIndex][0];
+                                }
+                            }
+                        }
+                    }
+                };
+                break;
+            case 'dailyPrecip':
+                const dailyPrecipGradient = this.ctx.getContext('2d').createLinearGradient(0,0,0,400);
+                dailyPrecipGradient.addColorStop(0,'hsla(217, 100%, 50%, 1)');
+                dailyPrecipGradient.addColorStop(1, 'hsla(186, 100%, 69%, 1)');
+                data = {
+                    data: this.#precip,
+                    type: 'bar',
+                    backgroundColor: dailyPrecipGradient,
+                    yAxisID: 'rainAxis',
+                    maxBarThickness: 25,
+                    datalabels: {
+                        display: (ctx) => {
+                            return ctx.dataset.data[ctx.dataIndex] > 0 ? 'auto' : false;
+                        },
+                        labels: {
+                            value: {
+                                anchor: 'start',
+                                align: 'start',
+                                color: 'blue'
+                            }
+                        }
+                    }
+                };
+                break;
         }
         return data;
+    }
+
+    destroy() {
+        this.#chart.destroy();
+    }
+
+    get getData() {
+        return {
+            temp: this.#temps,
+            feelsLike: this.#feelsLike,
+            wind: this.#wind
+        };
     }
 }
 
