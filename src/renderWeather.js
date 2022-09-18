@@ -183,10 +183,13 @@ class RenderWeatherData {
         console.log(this.weatherData.daily);
 
         this.weatherData.hourly.forEach(({ temp, feels_like, wind_speed }) => {
-            temp = utilities.convertFahrenheitCelsius(temp,tmp);
-            wind_speed = utilities.convertImperialMetric(wind_speed,tmp);
-            feels_like = utilities.convertFahrenheitCelsius(feels_like,tmp);
+            let newtemp = utilities.convertFahrenheitCelsius(temp,tmp);
+            let newwind_speed = utilities.convertImperialMetric(wind_speed,tmp);
+            let newfeels_like = utilities.convertFahrenheitCelsius(feels_like,tmp);
             // console.log(temp, wind_speed, feels_like);
+            temp = newtemp;
+            wind_speed = newwind_speed;
+            feels_like = newfeels_like;
         });
         console.log(this.weatherData.hourly);
 

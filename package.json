@@ -34,7 +34,6 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-    "@amcharts/amcharts5": "^5.2.20",
     "@popperjs/core": "^2.11.6",
     "bootstrap": "^5.2.0",
     "chart.js": "^3.9.1",
