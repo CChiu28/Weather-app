@@ -11,13 +11,11 @@ class RenderWeatherData {
 
     renderWeather() {
         const { current, daily, timezone_offset, hourly } = this.weatherData;
-        // console.log(current);
         this.#renderWeatherHeaderImage(current);
         this.#renderMainWeatherData(current);
         this.#renderCurrentWeatherData(current);
         this.#renderDailyWeatherData(daily, timezone_offset);
         this.#renderHourlyWeatherData(hourly, timezone_offset);
-        // formatWeatherMap();
     }
 
     #renderMainWeatherData(current) {
@@ -91,7 +89,7 @@ class RenderWeatherData {
         let hourlyChartIcons = document.querySelector('#hourly-chart-icons');
         weather.map((weather) => {
             let div = document.createElement('div');
-            div.style.display = 'table-cell';
+            // div.style.display = 'table-cell';
             let img = new Image();
             img.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
             img.alt = weather[0].description;
@@ -146,7 +144,6 @@ class RenderWeatherData {
             img.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
             img.alt = weather[0].description;
             img.title = weather[0].description;
-            // img.setAttribute('id','icon');
             img.setAttribute('class','img-fluid position-relative');
             div.append(img);
             c2ico.append(div);
@@ -169,29 +166,22 @@ class RenderWeatherData {
     }
 
     changeImperialMetric(tmp) {
-        let { current, daily, hourly } = this.weatherData;
+        const { current } = this.weatherData;
         current.temp = utilities.convertFahrenheitCelsius(current.temp, tmp);
         current.feels_like = utilities.convertFahrenheitCelsius(current.feels_like, tmp);
         current.wind_speed = utilities.convertImperialMetric(current.wind_speed,tmp);
-        console.log(this.weatherData.current);
 
         this.weatherData.daily.forEach(({ temp, wind_speed }) => {
             temp.min = utilities.convertFahrenheitCelsius(temp.min,tmp);
             temp.max = utilities.convertFahrenheitCelsius(temp.max,tmp);
             wind_speed = utilities.convertImperialMetric(wind_speed,tmp);
         });
-        console.log(this.weatherData.daily);
 
-        this.weatherData.hourly.forEach(({ temp, feels_like, wind_speed }) => {
-            let newtemp = utilities.convertFahrenheitCelsius(temp,tmp);
-            let newwind_speed = utilities.convertImperialMetric(wind_speed,tmp);
-            let newfeels_like = utilities.convertFahrenheitCelsius(feels_like,tmp);
-            // console.log(temp, wind_speed, feels_like);
-            temp = newtemp;
-            wind_speed = newwind_speed;
-            feels_like = newfeels_like;
+        this.weatherData.hourly.forEach((hourly) => {
+            hourly.temp = utilities.convertFahrenheitCelsius(hourly.temp,tmp);
+            hourly.wind_speed = utilities.convertImperialMetric(hourly.wind_speed,tmp);
+            hourly.feels_like = utilities.convertFahrenheitCelsius(hourly.feels_like,tmp);
         });
-        console.log(this.weatherData.hourly);
 
         if (this.#dailyWeatherChart || this.#hourlyWeatherChart) {
             this.deleteCharts();

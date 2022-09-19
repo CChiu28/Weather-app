@@ -2,3 +2,4 @@ node_modules/
 src/keys.js
 .env
 src/template.html
+.vscode/launch.json
