@@ -1,7 +1,7 @@
 const OPENWEATHER_KEY = process.env.OPENWEATHER_KEY;
 
-async function getWeather(lat,lon) {
-    const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely&appid=${OPENWEATHER_KEY}&units=imperial`;
+async function getWeather(lat, lon, tmp) {
+    const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely&appid=${OPENWEATHER_KEY}&units=${tmp}`;
     try {
         const response = await fetch(url);
         const weather = await response.json();

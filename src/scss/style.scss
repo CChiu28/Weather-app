@@ -7,3 +7,12 @@ $position-values: (
   75: 75%,
   100: 100%
 );
+
+@include media-breakpoint-down(lg) {
+  .chart-wrapper {
+    width: 800px;
+  }
+  #chart2icons {
+    width: 800px;
+  }
+};

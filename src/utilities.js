@@ -1,11 +1,7 @@
-// import * as amChart from '@amcharts/amcharts5';
-// import * as am5xy from '@amcharts/amcharts5/xy';
 
 function getDate(time,tz) {
-    // console.log(time, tz);
     const unixTime = (time+tz)*1000;
     const date = new Date(unixTime);
-    // console.log(date);
     const options = {
         weekday: 'short',
         day: 'numeric',
@@ -14,7 +10,6 @@ function getDate(time,tz) {
     const times = new Intl.DateTimeFormat(undefined, {
         timeStyle: 'short'
     }).format(date);
-    // return date.toLocaleDateString(undefined, options);
     return {
         day: day,
         time: times
@@ -63,15 +58,11 @@ function getDate(time,tz) {
 // }
 
 function convertImperialMetric(num, tmp) {
-    if (tmp==='C')
-        return Math.round(num*1.609344);
-    else return Math.round(num/1.609344);
+    return tmp==='metric' ? Math.round(num*1.609344) : Math.round(num/1.609344)
 }
 
 function convertFahrenheitCelsius(num, tmp) {
-    if (tmp==='C')
-        return Math.round((num-32)*(5/9));
-    else return Math.round((num*1.8)+32);
+    return tmp==='metric' ? Math.round((num-32)*(5/9)) : Math.round((num*1.8)+32)
 }
 
 export {

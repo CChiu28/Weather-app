@@ -1,16 +1,23 @@
 import * as utilities from './utilities.js';
 import { WeatherDataCharts } from './charts.js';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 class RenderWeatherData {
     constructor(weatherData) {
-        this.weatherData = weatherData;
+        this.#weatherData = weatherData;
     }
     
+    #weatherData
     #hourlyWeatherChart;
     #dailyWeatherChart;
 
     renderWeather() {
-        const { current, daily, timezone_offset, hourly } = this.weatherData;
+        if (this.#dailyWeatherChart || this.#hourlyWeatherChart) {
+            this.deleteCharts();
+            document.querySelector('#hourly-chart-icons').innerHTML = '';
+            document.querySelector('#chart2icons').innerHTML = '';
+        }
+        const { current, daily, timezone_offset, hourly } = this.#weatherData;
         this.#renderWeatherHeaderImage(current);
         this.#renderMainWeatherData(current);
         this.#renderCurrentWeatherData(current);
@@ -35,21 +42,37 @@ class RenderWeatherData {
     }
 
     #renderCurrentWeatherData(current) {
-        const { feels_like, pressure, humidity, clouds, wind_speed, visibility } = current;
-
+        const { feels_like, pressure, humidity, clouds, wind_speed, uvi } = current;
+        
         const feelsLikeDOM = document.querySelector('#current-feels-like');
         const pressureDOM = document.querySelector('#current-pressure');
         const humidityDOM = document.querySelector('#current-humidity');
         const cloudDOM = document.querySelector('#current-cloud');
         const windSpeedDOM = document.querySelector('#current-wind-speed');
-        const visDOM = document.querySelector('#current-visibility');
+        const uvDOM = document.querySelector('#current-uv');
 
         pressureDOM.textContent = `${pressure} hPa`;
         feelsLikeDOM.textContent = Math.round(feels_like);
         humidityDOM.textContent = `${Math.round(humidity)}% humidity`;
         cloudDOM.textContent = `${Math.round(clouds)}% clouds`;
         windSpeedDOM.textContent = `${Math.round(wind_speed)} mph`;
-        visDOM.textContent = `${visibility} meters`;
+        uvDOM.textContent = uvi;
+
+        // const feelsLikeDiv = document.querySelector('.current-feels-like-div');
+        // const feelsLikeIcon = document.createElement('h2');
+        // const title = document.createElement('h2');
+        // feelsLikeIcon.setAttribute('class', 'text-center bi bi-thermometer');
+        // title.textContent = 'Feels Like';
+        // title.setAttribute('class','text-center fw-bold');
+        // feelsLikeDiv.append(feelsLikeIcon, title);
+
+
+        this.#renderCurrentWeatherDiv('Feels Like', 'bi bi-thermometer', '.current-feels-like-div');
+        this.#renderCurrentWeatherDiv('Pressure', 'bi bi-speedometer', '.current-pressure-div');
+        this.#renderCurrentWeatherDiv('Humidity', 'bi bi-moisture', '.current-humidity-div');
+        this.#renderCurrentWeatherDiv('Cloud coverage', 'bi bi-clouds', '.current-cloud-div');
+        this.#renderCurrentWeatherDiv('Wind Speed', 'bi bi-wind', '.current-wind-div');
+        this.#renderCurrentWeatherDiv('UV Index', 'bi bi-brightness-high', '.current-uv-div');
     }
 
     #renderHourlyWeatherData(hourly, tz) {
@@ -144,7 +167,7 @@ class RenderWeatherData {
             img.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
             img.alt = weather[0].description;
             img.title = weather[0].description;
-            img.setAttribute('class','img-fluid position-relative');
+            // img.setAttribute('class','img-fluid position-relative');
             div.append(img);
             c2ico.append(div);
         });
@@ -154,6 +177,17 @@ class RenderWeatherData {
         const { weather } = current;
         const div = document.querySelector('#parallax-pic');
         div.style.backgroundImage = `url("https://source.unsplash.com/random/?${weather[0].description}")`;
+    }
+
+    #renderCurrentWeatherDiv(label, icon, parent) {
+        let addLabel = document.createElement('h6');
+        let addIcon = document.createElement('h4');
+        let div = document.querySelector(`${parent}`);
+
+        addLabel.textContent = label;
+        addLabel.setAttribute('class', 'text-center fw-bold');
+        addIcon.setAttribute('class', `text-center ${icon}`);
+        div.prepend(addIcon, addLabel);
     }
 
     updateCharts(val) {
@@ -166,28 +200,22 @@ class RenderWeatherData {
     }
 
     changeImperialMetric(tmp) {
-        const { current } = this.weatherData;
+        const { current } = this.#weatherData;
         current.temp = utilities.convertFahrenheitCelsius(current.temp, tmp);
         current.feels_like = utilities.convertFahrenheitCelsius(current.feels_like, tmp);
         current.wind_speed = utilities.convertImperialMetric(current.wind_speed,tmp);
 
-        this.weatherData.daily.forEach(({ temp, wind_speed }) => {
+        this.#weatherData.daily.forEach(({ temp, wind_speed }) => {
             temp.min = utilities.convertFahrenheitCelsius(temp.min,tmp);
             temp.max = utilities.convertFahrenheitCelsius(temp.max,tmp);
             wind_speed = utilities.convertImperialMetric(wind_speed,tmp);
         });
 
-        this.weatherData.hourly.forEach((hourly) => {
+        this.#weatherData.hourly.forEach((hourly) => {
             hourly.temp = utilities.convertFahrenheitCelsius(hourly.temp,tmp);
             hourly.wind_speed = utilities.convertImperialMetric(hourly.wind_speed,tmp);
             hourly.feels_like = utilities.convertFahrenheitCelsius(hourly.feels_like,tmp);
         });
-
-        if (this.#dailyWeatherChart || this.#hourlyWeatherChart) {
-            this.deleteCharts();
-            document.querySelector('#hourly-chart-icons').innerHTML = '';
-            document.querySelector('#chart2icons').innerHTML = '';
-        }
         this.renderWeather();
     }
 
