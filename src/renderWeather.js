@@ -16,6 +16,7 @@ class RenderWeatherData {
             this.deleteCharts();
             document.querySelector('#hourly-chart-icons').innerHTML = '';
             document.querySelector('#chart2icons').innerHTML = '';
+            document.querySelector('#current-weather').innerHTML = '';
         }
         const { current, daily, timezone_offset, hourly } = this.#weatherData;
         this.#renderWeatherHeaderImage(current);
@@ -44,19 +45,19 @@ class RenderWeatherData {
     #renderCurrentWeatherData(current) {
         const { feels_like, pressure, humidity, clouds, wind_speed, uvi } = current;
         
-        const feelsLikeDOM = document.querySelector('#current-feels-like');
-        const pressureDOM = document.querySelector('#current-pressure');
-        const humidityDOM = document.querySelector('#current-humidity');
-        const cloudDOM = document.querySelector('#current-cloud');
-        const windSpeedDOM = document.querySelector('#current-wind-speed');
-        const uvDOM = document.querySelector('#current-uv');
+        // const feelsLikeDOM = document.querySelector('#current-feels-like');
+        // const pressureDOM = document.querySelector('#current-pressure');
+        // const humidityDOM = document.querySelector('#current-humidity');
+        // const cloudDOM = document.querySelector('#current-cloud');
+        // const windSpeedDOM = document.querySelector('#current-wind-speed');
+        // const uvDOM = document.querySelector('#current-uv');
 
-        pressureDOM.textContent = `${pressure} hPa`;
-        feelsLikeDOM.textContent = Math.round(feels_like);
-        humidityDOM.textContent = `${Math.round(humidity)}% humidity`;
-        cloudDOM.textContent = `${Math.round(clouds)}% clouds`;
-        windSpeedDOM.textContent = `${Math.round(wind_speed)} mph`;
-        uvDOM.textContent = uvi;
+        // pressureDOM.textContent = `${pressure} hPa`;
+        // feelsLikeDOM.textContent = Math.round(feels_like);
+        // humidityDOM.textContent = `${Math.round(humidity)}% humidity`;
+        // cloudDOM.textContent = `${Math.round(clouds)}% clouds`;
+        // windSpeedDOM.textContent = `${Math.round(wind_speed)} mph`;
+        // uvDOM.textContent = uvi;
 
         // const feelsLikeDiv = document.querySelector('.current-feels-like-div');
         // const feelsLikeIcon = document.createElement('h2');
@@ -67,12 +68,12 @@ class RenderWeatherData {
         // feelsLikeDiv.append(feelsLikeIcon, title);
 
 
-        this.#renderCurrentWeatherDiv('Feels Like', 'bi bi-thermometer', '.current-feels-like-div');
-        this.#renderCurrentWeatherDiv('Pressure', 'bi bi-speedometer', '.current-pressure-div');
-        this.#renderCurrentWeatherDiv('Humidity', 'bi bi-moisture', '.current-humidity-div');
-        this.#renderCurrentWeatherDiv('Cloud coverage', 'bi bi-clouds', '.current-cloud-div');
-        this.#renderCurrentWeatherDiv('Wind Speed', 'bi bi-wind', '.current-wind-div');
-        this.#renderCurrentWeatherDiv('UV Index', 'bi bi-brightness-high', '.current-uv-div');
+        this.#renderCurrentWeatherDiv('Feels Like', 'bi bi-thermometer', '.current-feels-like-div', `${Math.round(feels_like)}`);
+        this.#renderCurrentWeatherDiv('Pressure', 'bi bi-speedometer', '.current-pressure-div', `${pressure}`);
+        this.#renderCurrentWeatherDiv('Humidity', 'bi bi-moisture', '.current-humidity-div', `${Math.round(humidity)}%`);
+        this.#renderCurrentWeatherDiv('Clouds', 'bi bi-clouds', '.current-cloud-div', `${Math.round(clouds)}%`);
+        this.#renderCurrentWeatherDiv('Wind Speed', 'bi bi-wind', '.current-wind-div', `${Math.round(wind_speed)}`);
+        this.#renderCurrentWeatherDiv('UV Index', 'bi bi-brightness-high', '.current-uv-div', uvi);
     }
 
     #renderHourlyWeatherData(hourly, tz) {
@@ -179,15 +180,27 @@ class RenderWeatherData {
         div.style.backgroundImage = `url("https://source.unsplash.com/random/?${weather[0].description}")`;
     }
 
-    #renderCurrentWeatherDiv(label, icon, parent) {
+    #renderCurrentWeatherDiv(label, icon, parent, data) {
         let addLabel = document.createElement('h6');
         let addIcon = document.createElement('h4');
-        let div = document.querySelector(`${parent}`);
+        let addData = document.createElement('p');
+        let div = document.createElement('div');
+        let cardDiv = document.createElement('div');
+        let parentDiv = document.createElement('div');
+        let article = document.querySelector('#current-weather');
 
+        parentDiv.setAttribute('class', 'card text-center shadow-sm mb-2 mt-2 current');
+        div.setAttribute('class', 'card-body d-flex flex-column align-items-center');
         addLabel.textContent = label;
-        addLabel.setAttribute('class', 'text-center fw-bold');
-        addIcon.setAttribute('class', `text-center ${icon}`);
-        div.prepend(addIcon, addLabel);
+        addLabel.setAttribute('class', 'fw-bold m-auto');
+        addIcon.setAttribute('class', `${icon} m-auto`);
+        addData.setAttribute('class', 'display-6 m-auto');
+        addData.textContent = data;
+        // cardDiv.setAttribute('class', 'd-flex')
+        div.append(addIcon, addLabel, addData);
+        cardDiv.append(div);
+        parentDiv.append(div);
+        article.append(parentDiv);
     }
 
     updateCharts(val) {

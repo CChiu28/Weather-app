@@ -16,6 +16,7 @@ import { RenderWeatherData } from './renderWeather.js';
             render.deleteCharts();
             document.querySelector('#hourly-chart-icons').innerHTML = '';
             document.querySelector('#chart2icons').innerHTML = '';
+            document.querySelector('#current-weather').innerHTML = '';
         }
         getWeatherAndCoords();
     });

@@ -1,6 +1,3 @@
-.root {
-    --bs-body-bg: gray;
-}
 
 .test {
     color: red;
@@ -47,7 +44,9 @@
 /* #hourly-chart-icons {
     width: 4800px;
 } */
-
+.current {
+    width: 10rem;
+}
 .daily-chart-wrapper {
     height: 450px;
 }
