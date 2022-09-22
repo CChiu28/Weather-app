@@ -3,6 +3,7 @@ import './scss/style.scss';
 // import bootstrap from 'bootstrap';
 import { getCoordinates, getWeather } from './api.js';
 import { RenderWeatherData } from './renderWeather.js';
+import { getToggleTemp } from './utilities';
 
 (function init() {
     const submitBtn = document.querySelector('#submitLocation');
@@ -35,12 +36,12 @@ import { RenderWeatherData } from './renderWeather.js';
         const locationInput = document.querySelector('#autocomplete');
         const { lat, lon } = await getCoordinates(locationInput.value);
         const weather = await getWeather(lat,lon, getToggleTemp());
-        render = new RenderWeatherData(weather);
+        render = new RenderWeatherData(weather, getToggleTemp());
         render.renderWeather();
     }
 
-    function getToggleTemp() {
-        const changeTempBtn = document.querySelector('#temperature-toggle');
-        return changeTempBtn.checked ? 'metric' : 'imperial';
-    }
+    // function getToggleTemp() {
+    //     const changeTempBtn = document.querySelector('#temperature-toggle');
+    //     return changeTempBtn.checked ? 'metric' : 'imperial';
+    // }
 })();

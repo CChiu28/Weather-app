@@ -58,15 +58,26 @@ function getDate(time,tz) {
 // }
 
 function convertImperialMetric(num, tmp) {
-    return tmp==='metric' ? Math.round(num*1.609344) : Math.round(num/1.609344)
+    return tmp==='metric' ? Math.round(num*1.609344) : Math.round(num/1.609344);
 }
 
 function convertFahrenheitCelsius(num, tmp) {
-    return tmp==='metric' ? Math.round((num-32)*(5/9)) : Math.round((num*1.8)+32)
+    return tmp==='metric' ? Math.round((num-32)*(5/9)) : Math.round((num*1.8)+32);
+}
+
+function getMphKm(tmp) {
+    return tmp==='metric' ? 'km' : 'mph';
+}
+
+function getToggleTemp() {
+    const changeTempBtn = document.querySelector('#temperature-toggle');
+    return changeTempBtn.checked ? 'metric' : 'imperial';
 }
 
 export {
     getDate,
     convertFahrenheitCelsius,
-    convertImperialMetric
+    convertImperialMetric,
+    getMphKm,
+    getToggleTemp
 }

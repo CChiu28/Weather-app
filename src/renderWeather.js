@@ -3,11 +3,13 @@ import { WeatherDataCharts } from './charts.js';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 class RenderWeatherData {
-    constructor(weatherData) {
+    constructor(weatherData, toggleTmp) {
         this.#weatherData = weatherData;
+        this.#toggleTmp = toggleTmp;
     }
     
-    #weatherData
+    #weatherData;
+    #toggleTmp;
     #hourlyWeatherChart;
     #dailyWeatherChart;
 
@@ -20,26 +22,29 @@ class RenderWeatherData {
         }
         const { current, daily, timezone_offset, hourly } = this.#weatherData;
         this.#renderWeatherHeaderImage(current);
-        this.#renderMainWeatherData(current);
+        this.#renderMainWeatherData(current, 0);
         this.#renderCurrentWeatherData(current);
-        this.#renderDailyWeatherData(daily, timezone_offset);
-        this.#renderHourlyWeatherData(hourly, timezone_offset);
+        this.#renderDailyWeatherData(daily, 0);
+        this.#renderHourlyWeatherData(hourly, 0);
     }
 
-    #renderMainWeatherData(current) {
-        const { temp, weather } = current;
+    #renderMainWeatherData(current, tz) {
+        const { temp, weather, dt } = current;
         const currTemp = document.querySelector('#overview-temp');
         const location = document.querySelector('#overview-location');
         const locationFromInput = document.querySelector('#autocomplete');
         const currCondition = document.querySelector('#overview-condition');
         const conditionImg = document.querySelector('#overview-img');
+        const date = document.querySelector('#date');
         
-        currTemp.textContent = Math.round(temp);
+        currTemp.textContent = `${Math.round(temp)}°`;
         location.textContent = locationFromInput.value;
         currCondition.textContent = weather[0].description;
         conditionImg.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
         conditionImg.alt = weather[0].description;
         conditionImg.title = weather[0].description;
+        let time = utilities.getDate(dt, tz);
+        date.textContent = `${time.time}, ${time.day}`;
     }
 
     #renderCurrentWeatherData(current) {
@@ -68,11 +73,11 @@ class RenderWeatherData {
         // feelsLikeDiv.append(feelsLikeIcon, title);
 
 
-        this.#renderCurrentWeatherDiv('Feels Like', 'bi bi-thermometer', '.current-feels-like-div', `${Math.round(feels_like)}`);
+        this.#renderCurrentWeatherDiv('Feels Like', 'bi bi-thermometer', '.current-feels-like-div', `${Math.round(feels_like)}°`);
         this.#renderCurrentWeatherDiv('Pressure', 'bi bi-speedometer', '.current-pressure-div', `${pressure}`);
         this.#renderCurrentWeatherDiv('Humidity', 'bi bi-moisture', '.current-humidity-div', `${Math.round(humidity)}%`);
         this.#renderCurrentWeatherDiv('Clouds', 'bi bi-clouds', '.current-cloud-div', `${Math.round(clouds)}%`);
-        this.#renderCurrentWeatherDiv('Wind Speed', 'bi bi-wind', '.current-wind-div', `${Math.round(wind_speed)}`);
+        this.#renderCurrentWeatherDiv('Wind Speed', 'bi bi-wind', '.current-wind-div', `${Math.round(wind_speed)} ${utilities.getMphKm(utilities.getToggleTemp())}`);
         this.#renderCurrentWeatherDiv('UV Index', 'bi bi-brightness-high', '.current-uv-div', uvi);
     }
 
