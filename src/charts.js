@@ -92,7 +92,7 @@ class WeatherDataCharts {
                             drawTicks: false,
                             display: false
                         },
-                        suggestedMax: Math.max(...this.#temps.map(tmp => tmp.max))+2,
+                        suggestedMax: Math.max(...this.#temps.map(tmp => tmp.max))+3,
                         suggestedMin: Math.min(...this.#temps.map(tmp => tmp.min))-2
                     },
                     rainAxis: {

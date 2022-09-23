@@ -3,13 +3,17 @@ import { WeatherDataCharts } from './charts.js';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 class RenderWeatherData {
-    constructor(weatherData, toggleTmp) {
+    constructor(weatherData, name, state, country) {
         this.#weatherData = weatherData;
-        this.#toggleTmp = toggleTmp;
+        this.#name = name;
+        this.#state = state;
+        this.#country = country;
     }
     
     #weatherData;
-    #toggleTmp;
+    #name;
+    #state;
+    #country;
     #hourlyWeatherChart;
     #dailyWeatherChart;
 
@@ -38,7 +42,9 @@ class RenderWeatherData {
         const date = document.querySelector('#date');
         
         currTemp.textContent = `${Math.round(temp)}°`;
-        location.textContent = locationFromInput.value;
+        if (this.#state)
+            location.textContent = `${this.#name}, ${this.#state}`;
+        else location.textContent = `${this.#name}, ${this.#country}`;
         currCondition.textContent = weather[0].description;
         conditionImg.src = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
         conditionImg.alt = weather[0].description;
@@ -49,35 +55,11 @@ class RenderWeatherData {
 
     #renderCurrentWeatherData(current) {
         const { feels_like, pressure, humidity, clouds, wind_speed, uvi } = current;
-        
-        // const feelsLikeDOM = document.querySelector('#current-feels-like');
-        // const pressureDOM = document.querySelector('#current-pressure');
-        // const humidityDOM = document.querySelector('#current-humidity');
-        // const cloudDOM = document.querySelector('#current-cloud');
-        // const windSpeedDOM = document.querySelector('#current-wind-speed');
-        // const uvDOM = document.querySelector('#current-uv');
-
-        // pressureDOM.textContent = `${pressure} hPa`;
-        // feelsLikeDOM.textContent = Math.round(feels_like);
-        // humidityDOM.textContent = `${Math.round(humidity)}% humidity`;
-        // cloudDOM.textContent = `${Math.round(clouds)}% clouds`;
-        // windSpeedDOM.textContent = `${Math.round(wind_speed)} mph`;
-        // uvDOM.textContent = uvi;
-
-        // const feelsLikeDiv = document.querySelector('.current-feels-like-div');
-        // const feelsLikeIcon = document.createElement('h2');
-        // const title = document.createElement('h2');
-        // feelsLikeIcon.setAttribute('class', 'text-center bi bi-thermometer');
-        // title.textContent = 'Feels Like';
-        // title.setAttribute('class','text-center fw-bold');
-        // feelsLikeDiv.append(feelsLikeIcon, title);
-
-
         this.#renderCurrentWeatherDiv('Feels Like', 'bi bi-thermometer', '.current-feels-like-div', `${Math.round(feels_like)}°`);
         this.#renderCurrentWeatherDiv('Pressure', 'bi bi-speedometer', '.current-pressure-div', `${pressure}`);
         this.#renderCurrentWeatherDiv('Humidity', 'bi bi-moisture', '.current-humidity-div', `${Math.round(humidity)}%`);
         this.#renderCurrentWeatherDiv('Clouds', 'bi bi-clouds', '.current-cloud-div', `${Math.round(clouds)}%`);
-        this.#renderCurrentWeatherDiv('Wind Speed', 'bi bi-wind', '.current-wind-div', `${Math.round(wind_speed)} ${utilities.getMphKm(utilities.getToggleTemp())}`);
+        this.#renderCurrentWeatherDiv('Wind Speed', 'bi bi-wind', '.current-wind-div', `${Math.round(wind_speed)}`, `${utilities.getMphKm(utilities.getToggleTemp())}`);
         this.#renderCurrentWeatherDiv('UV Index', 'bi bi-brightness-high', '.current-uv-div', uvi);
     }
 
@@ -185,14 +167,14 @@ class RenderWeatherData {
         div.style.backgroundImage = `url("https://source.unsplash.com/random/?${weather[0].description}")`;
     }
 
-    #renderCurrentWeatherDiv(label, icon, parent, data) {
-        let addLabel = document.createElement('h6');
-        let addIcon = document.createElement('h4');
-        let addData = document.createElement('p');
-        let div = document.createElement('div');
-        let cardDiv = document.createElement('div');
-        let parentDiv = document.createElement('div');
-        let article = document.querySelector('#current-weather');
+    #renderCurrentWeatherDiv(label, icon, parent, data, windMetric) {
+        const addLabel = document.createElement('h6');
+        const addIcon = document.createElement('h4');
+        const addData = document.createElement('p');
+        const div = document.createElement('div');
+        const cardDiv = document.createElement('div');
+        const parentDiv = document.createElement('div');
+        const article = document.querySelector('#current-weather');
 
         parentDiv.setAttribute('class', 'card text-center shadow-sm mb-2 mt-2 current');
         div.setAttribute('class', 'card-body d-flex flex-column align-items-center');
@@ -200,9 +182,19 @@ class RenderWeatherData {
         addLabel.setAttribute('class', 'fw-bold m-auto');
         addIcon.setAttribute('class', `${icon} m-auto`);
         addData.setAttribute('class', 'display-6 m-auto');
-        addData.textContent = data;
-        // cardDiv.setAttribute('class', 'd-flex')
-        div.append(addIcon, addLabel, addData);
+        if (label==='Wind Speed') {
+            const speedDiv = document.createElement('div');
+            const speed = document.createElement('p');
+            addData.textContent = data;
+            speed.textContent = windMetric;
+            speed.setAttribute('class', 'align-self-end');
+            speedDiv.setAttribute('class', 'd-flex');
+            speedDiv.append(addData,speed);
+            div.append(addIcon,addLabel,speedDiv);
+        } else {
+            addData.textContent = data;
+            div.append(addIcon, addLabel, addData);
+        }
         cardDiv.append(div);
         parentDiv.append(div);
         article.append(parentDiv);
@@ -237,13 +229,13 @@ class RenderWeatherData {
         this.renderWeather();
     }
 
-    get dailyWeatherChart() {
-        return this.#dailyWeatherChart;
-    }
+    // get dailyWeatherChart() {
+    //     return this.#dailyWeatherChart;
+    // }
 
-    get hourlyWeatherChart() {
-        return this.#hourlyWeatherChart;
-    }
+    // get hourlyWeatherChart() {
+    //     return this.#hourlyWeatherChart;
+    // }
 
 }
 

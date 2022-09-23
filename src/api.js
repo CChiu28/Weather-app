@@ -26,7 +26,21 @@ async function getCoordinates(location) {
     return coords;
 }
 
+async function getLocationName(lat, lon) {
+    const url = `http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${OPENWEATHER_KEY}`;
+    let place;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        place = data[0];
+    } catch (err) {
+        console.log('bad place', err);
+    }
+    return place;
+}
+
 export {
     getWeather,
-    getCoordinates
+    getCoordinates,
+    getLocationName
 };

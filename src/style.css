@@ -1,8 +1,4 @@
 
-.test {
-    color: red;
-}
-
 #parallax-pic {
     height: 500px;
     /* overflow: hidden; */
@@ -10,10 +6,9 @@
     background-size: cover;
 }
 
-#location-div {
+/* #location-div {
     margin-left: auto;
-    margin-right: auto;
-}
+} */
 /* #icons {
     max-width: 100%;
     height: auto;
@@ -68,6 +63,6 @@
     /* margin: 10px; */
 }
 
-div {
+/* div {
     border: 1px solid red;
-}
+} */

@@ -1,7 +1,7 @@
 import './style.css';
 import './scss/style.scss';
-// import bootstrap from 'bootstrap';
-import { getCoordinates, getWeather } from './api.js';
+import * as bootstrap from 'bootstrap';
+import { getCoordinates, getLocationName, getWeather } from './api.js';
 import { RenderWeatherData } from './renderWeather.js';
 import { getToggleTemp } from './utilities';
 
@@ -12,14 +12,14 @@ import { getToggleTemp } from './utilities';
     let render;
 
     submitBtn.addEventListener('click', (e) => {
-        e.preventDefault();
+        // e.preventDefault();
         if (render) {
             render.deleteCharts();
             document.querySelector('#hourly-chart-icons').innerHTML = '';
             document.querySelector('#chart2icons').innerHTML = '';
             document.querySelector('#current-weather').innerHTML = '';
         }
-        getWeatherAndCoords();
+        getLocationByInput();
     });
 
     hourlyBtn.forEach((btn) => {
@@ -29,17 +29,44 @@ import { getToggleTemp } from './utilities';
     });
 
     changeTempBtn.addEventListener('click', () => {
-        render.changeImperialMetric(getToggleTemp());
+        if (render)
+            render.changeImperialMetric(getToggleTemp());
+        else changeTempBtn.checked ? console.log('metric') : console.log('imperial');
     });
 
-    async function getWeatherAndCoords() {
+    async function getLocationByInput() {
         const locationInput = document.querySelector('#autocomplete');
-        const { lat, lon } = await getCoordinates(locationInput.value);
+        try {
+            const { lat, lon, name, state, country } = await getCoordinates(locationInput.value);
+            getWeatherFromApi(lat, lon, name, state, country);
+        } catch (err) {
+            console.log('bad', err);
+        }
+    }
+
+    async function getLocationByDevice(pos) {
+        let { latitude, longitude } = pos.coords;
+        try {
+            const { name, state, country } = await getLocationName(latitude, longitude);
+            getWeatherFromApi(latitude, longitude, name, state, country);
+        } catch (err) {
+            console.log('bad', err);
+        }
+    }
+
+    async function getWeatherFromApi(lat, lon, name, state, country) {
         const weather = await getWeather(lat,lon, getToggleTemp());
-        render = new RenderWeatherData(weather, getToggleTemp());
+        render = new RenderWeatherData(weather, name, state, country);
         render.renderWeather();
     }
 
+    function noLocation(err) {
+        console.log(err);
+    }
+
+    window.onload = () => {
+        navigator.geolocation.getCurrentPosition(getLocationByDevice, noLocation);
+    };
     // function getToggleTemp() {
     //     const changeTempBtn = document.querySelector('#temperature-toggle');
     //     return changeTempBtn.checked ? 'metric' : 'imperial';
