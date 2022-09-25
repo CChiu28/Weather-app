@@ -1,34 +1,14 @@
 
 #parallax-pic {
-    height: 500px;
+    height: 600px;
     /* overflow: hidden; */
     background-attachment: fixed;
     background-size: cover;
 }
 
-/* #location-div {
-    margin-left: auto;
-} */
-/* #icons {
-    max-width: 100%;
-    height: auto;
-} */
-/* #chart2 {
-    overflow: auto;
-    position: relative;
-    width: 800px;
-} */
-/* #chart2icons {
-    position: relative;
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    height: auto;
-    overflow: auto;
-} */
 
 #hourly-chart-wrapper {
-    height: 450px;
+    height: 420px;
 }
 #hourlyChart2 {
     position: relative;
@@ -43,7 +23,7 @@
     width: 10rem;
 }
 .daily-chart-wrapper {
-    height: 450px;
+    height: 420px;
 }
 .chart-wrapper {
     height: 300px

@@ -16,7 +16,7 @@ class WeatherDataCharts {
     #feelsLike;
     #wind;
     #chart;
-    #days = [];
+    // #days = [];
 
     createChartjs() {
         this.#times = this.weather.map(({ dt }) => dt);
@@ -25,17 +25,17 @@ class WeatherDataCharts {
         this.#feelsLike = this.weather.map(({ feels_like }) => feels_like);
         this.#wind = this.weather.map(({ wind_speed }) => Math.round(wind_speed));
 
-        // let days = [];
+        const days = [];
         this.#times.forEach(time => {
             if (this.type==='daily')
-                this.#days.push(utilities.getDate(time,this.tz).day);
-            else this.#days.push(utilities.getDate(time,this.tz).time);
+                days.push(utilities.getDate(time,this.tz).day);
+            else days.push(utilities.getDate(time,this.tz).time);
         });
 
         this.#chart = new Chart(this.ctx, {
             type: this.#getTypeOfChart(),
             data: {
-                labels: this.#days,
+                labels: days,
                 datasets: this.#getDailyOrHourlyData()
             },
             plugins: [ChartDataLabels],
@@ -79,6 +79,11 @@ class WeatherDataCharts {
                         position: 'top',
                         grid: {
                             drawTicks: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 20
+                            }
                         }
                     },
                     tempAxis: {
@@ -128,6 +133,13 @@ class WeatherDataCharts {
                     }
                 },
                 scales: {
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 17
+                            }
+                        }
+                    },
                     y: {
                         beginAtZero: false,
                         ticks: {
@@ -161,6 +173,13 @@ class WeatherDataCharts {
                         drawTicks: false
                     },
                     suggestedMax: 100
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 17
+                        }
+                    }
                 }
             }
         } else if (info!='daily') {
@@ -176,6 +195,13 @@ class WeatherDataCharts {
                     },
                     suggestedMax: Math.max(...this.#temps)+3,
                     suggestedMin: Math.min(...this.#temps)-2
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 17
+                        }
+                    }
                 }
             }
         } else if (info==='daily') {
@@ -238,7 +264,13 @@ class WeatherDataCharts {
                             value: {
                                 anchor: 'end',
                                 align: 'end',
-                                color: 'orange'
+                                color: 'orange',
+                                font: {
+                                    size: 20
+                                },
+                                formatter: (val,ctx) => {
+                                    return `${ctx.dataset.data[ctx.dataIndex]}°`
+                                }
                             }
                         }
                     },
@@ -262,7 +294,13 @@ class WeatherDataCharts {
                             value: {
                                 anchor: 'end',
                                 align: 'end',
-                                color: 'blue'
+                                color: 'blue',
+                                font: {
+                                    size: 20
+                                },
+                                formatter: (val,ctx) => {
+                                    return `${ctx.dataset.data[ctx.dataIndex]}%`
+                                }
                             }
                         }
                     },
@@ -286,7 +324,13 @@ class WeatherDataCharts {
                             value: {
                                 anchor: 'end',
                                 align: 'end',
-                                color: 'orange'
+                                color: 'orange',
+                                font: {
+                                    size: 20
+                                },
+                                formatter: (val,ctx) => {
+                                    return `${ctx.dataset.data[ctx.dataIndex]}°`
+                                }
                             }
                         }
                     },
@@ -310,7 +354,13 @@ class WeatherDataCharts {
                             value: {
                                 anchor: 'end',
                                 align: 'end',
-                                color: 'black'
+                                color: 'black',
+                                font: {
+                                    size: 20
+                                },
+                                formatter: (val,ctx) => {
+                                    return `${ctx.dataset.data[ctx.dataIndex]} ${utilities.getMphKm()}`
+                                }
                             }
                         }
                     },
@@ -336,19 +386,25 @@ class WeatherDataCharts {
                     datalabels: {
                         labels: {
                             max: {
-                                color: 'blue',
+                                color: 'orange',
                                 align: 'end',
                                 anchor: 'end',
+                                font: {
+                                    size: 15
+                                },
                                 formatter: (value,ctx) => {
-                                    return ctx.dataset.data[ctx.dataIndex][1];
+                                    return `${ctx.dataset.data[ctx.dataIndex][1]}°`;
                                 }
                             },
                             value: {
                                 anchor: 'start',
                                 align: 'start',
-                                color: 'green',
+                                color: 'orange',
+                                font: {
+                                    size: 15
+                                },
                                 formatter: (value,ctx) => {
-                                    return ctx.dataset.data[ctx.dataIndex][0];
+                                    return `${ctx.dataset.data[ctx.dataIndex][0]}°`;
                                 }
                             }
                         }
@@ -373,7 +429,13 @@ class WeatherDataCharts {
                             value: {
                                 anchor: 'start',
                                 align: 'start',
-                                color: 'blue'
+                                color: 'blue',
+                                font: {
+                                    size: 15
+                                },
+                                formatter: (val,ctx) => {
+                                    return `${ctx.dataset.data[ctx.dataIndex]}%`;
+                                }
                             }
                         }
                     }

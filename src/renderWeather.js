@@ -1,6 +1,7 @@
 import * as utilities from './utilities.js';
 import { WeatherDataCharts } from './charts.js';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { getWeatherHeaderImage } from './api.js';
 
 class RenderWeatherData {
     constructor(weatherData, name, state, country) {
@@ -17,15 +18,17 @@ class RenderWeatherData {
     #hourlyWeatherChart;
     #dailyWeatherChart;
 
-    renderWeather() {
+    async renderWeather() {
         if (this.#dailyWeatherChart || this.#hourlyWeatherChart) {
             this.deleteCharts();
             document.querySelector('#hourly-chart-icons').innerHTML = '';
             document.querySelector('#chart2icons').innerHTML = '';
             document.querySelector('#current-weather').innerHTML = '';
+            document.querySelector('#parallax-pic').removeChild(document.querySelector('#parallax-pic').firstChild);
         }
         const { current, daily, timezone_offset, hourly } = this.#weatherData;
-        this.#renderWeatherHeaderImage(current);
+        // if (document.querySelector('#parallax-pic').style.backgroundImage==='')
+        //     this.renderWeatherHeaderImage(current);
         this.#renderMainWeatherData(current, 0);
         this.#renderCurrentWeatherData(current);
         this.#renderDailyWeatherData(daily, 0);
@@ -34,12 +37,27 @@ class RenderWeatherData {
 
     #renderMainWeatherData(current, tz) {
         const { temp, weather, dt } = current;
-        const currTemp = document.querySelector('#overview-temp');
-        const location = document.querySelector('#overview-location');
-        const locationFromInput = document.querySelector('#autocomplete');
-        const currCondition = document.querySelector('#overview-condition');
-        const conditionImg = document.querySelector('#overview-img');
-        const date = document.querySelector('#date');
+        const parentDiv = document.querySelector('#parallax-pic');
+        const cardDiv = document.createElement('div');
+        const cardBody = document.createElement('div');
+        const overviewData = document.createElement('div');
+        const currTemp = document.createElement('h1');
+        const location = document.createElement('h6');
+        const currCondition = document.createElement('h6');
+        const imgWrapper = document.createElement('div');
+        const conditionImg = document.createElement('img');
+        const date = document.createElement('div');
+
+        cardDiv.setAttribute('class', 'bg-light bg-opacity-75 card position-absolute bottom-0 start-50 translate-middle-x mb-4');
+        cardBody.setAttribute('class', 'card-body d-flex');
+        currTemp.setAttribute('class', 'display-1');
+        date.setAttribute('class', 'card-footer');
+
+        overviewData.append(currTemp, location, currCondition);
+        imgWrapper.append(conditionImg);
+        cardBody.append(overviewData,imgWrapper);
+        cardDiv.append(cardBody, date);
+        parentDiv.prepend(cardDiv);
         
         currTemp.textContent = `${Math.round(temp)}°`;
         if (this.#state)
@@ -92,7 +110,7 @@ class RenderWeatherData {
         //     ctx.append(div);
         // })
         // utilities.createChart(hourly, tz, 'hourly');
-        const hourlyCtx = document.querySelector('#hourlyChart');
+        const hourlyCtx = document.querySelector('#hourly-chart');
         this.#hourlyWeatherChart = new WeatherDataCharts(hourly,tz,hourlyCtx,'hourly');
         this.#hourlyWeatherChart.createChartjs();
 
@@ -161,10 +179,19 @@ class RenderWeatherData {
         });
     }
 
-    #renderWeatherHeaderImage(current) {
+    async renderWeatherHeaderImage(current) {
         const { weather } = current;
         const div = document.querySelector('#parallax-pic');
-        div.style.backgroundImage = `url("https://source.unsplash.com/random/?${weather[0].description}")`;
+        if (div.lastChild&&div.lastChild.nodeName==='P')
+            div.removeChild(div.lastChild);
+        let imgObj = await getWeatherHeaderImage(weather[0].description);
+        if (imgObj!=null) {
+            div.style.backgroundImage = `url(${imgObj.img})`;
+            const owner = document.createElement('p');
+            owner.setAttribute('class', 'position-absolute bottom-0 end-0 me-3');
+            owner.innerHTML = `Photo by <a href="${imgObj.owner}?utm_source=weather-app&utm_medium=referral">${imgObj.name}</a> on <a href="https://unsplash.com/?utm_source=weather-app&utm_medium=referral">Unsplash</a>`;
+            div.append(owner);
+        } else div.style.backgroundImage = `url("https://source.unsplash.com/random/?${weather[0].description}")`;
     }
 
     #renderCurrentWeatherDiv(label, icon, parent, data, windMetric) {
