@@ -65,8 +65,16 @@ function convertFahrenheitCelsius(num, tmp) {
     return tmp==='metric' ? Math.round((num-32)*(5/9)) : Math.round((num*1.8)+32);
 }
 
+function convertMmCmIn(num, tmp) {
+    return tmp==='metric' ? (num*0.1).toFixed(2) : (num*0.0393700787).toFixed(2);
+}
+
 function getMphKm(tmp) {
     return tmp==='metric' ? 'km' : 'mph';
+}
+
+function getCmIn(tmp) {
+    return tmp==='metric' ? 'cm' : 'in';
 }
 
 function getToggleTemp() {
@@ -79,5 +87,7 @@ export {
     convertFahrenheitCelsius,
     convertImperialMetric,
     getMphKm,
-    getToggleTemp
+    getToggleTemp,
+    convertMmCmIn,
+    getCmIn
 }

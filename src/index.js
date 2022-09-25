@@ -51,7 +51,7 @@ import { getToggleTemp } from './utilities';
             setTimeout(() => {
                 inputLocation.classList.remove('is-invalid');
                 inputLocation.setAttribute('placeholder', 'Enter a Location');
-            },1000)
+            },3000)
         }
     }
 

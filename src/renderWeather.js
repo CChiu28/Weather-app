@@ -111,7 +111,7 @@ class RenderWeatherData {
         // })
         // utilities.createChart(hourly, tz, 'hourly');
         const hourlyCtx = document.querySelector('#hourly-chart');
-        this.#hourlyWeatherChart = new WeatherDataCharts(hourly,tz,hourlyCtx,'hourly');
+        this.#hourlyWeatherChart = new WeatherDataCharts(hourly,tz,hourlyCtx,'hourly',utilities.getToggleTemp());
         this.#hourlyWeatherChart.createChartjs();
 
         const weather = hourly.map(({weather}) => weather);
