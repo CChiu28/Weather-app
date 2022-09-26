@@ -6,20 +6,21 @@ import { RenderWeatherData } from './renderWeather.js';
 import { getToggleTemp, clearDom } from './utilities';
 
 (function init() {
+    const form = document.querySelector('#form-input');
     const submitBtn = document.querySelector('#submitLocation');
     const inputLocation = document.querySelector('#inputLocation');
     const hourlyBtns = document.querySelectorAll('.hourly-btn');
     const changeTempBtn = document.querySelector('#temperature-toggle');
     let render;
 
-    submitBtn.addEventListener('click', e => {
-        // e.preventDefault();
+    form.addEventListener('submit', e => {
+        e.preventDefault();
         if (render) {
             render.deleteCharts();
             clearDom();
         }
         getLocationByInput();
-    });
+    })
 
     hourlyBtns.forEach((btn) => {
         btn.addEventListener('click', () => {
