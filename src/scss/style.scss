@@ -9,10 +9,10 @@ $position-values: (
 );
 
 @include media-breakpoint-down(lg) {
-  .chart-wrapper {
+  .d-chart-wrapper {
     width: 800px;
   }
-  #chart2icons {
+  #daily-chart-icons {
     width: 800px;
   }
 };

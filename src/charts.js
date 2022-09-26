@@ -25,6 +25,8 @@ class WeatherDataCharts {
     #ctx;
     #chart;
 
+    // Main function that grabs necessary weather data
+    // Creates charts and calls necessary function to populate data as necessary
     createChartjs() {
         this.#times = this.#weather.map(({ dt }) => dt);
         this.#temps = this.#weather.map(({ temp }) => temp);
@@ -66,6 +68,7 @@ class WeatherDataCharts {
         else return 'line';
     }
 
+    // Grabs data for daily forecast or the hourly forecast
     #getDailyOrHourlyData(info) {
         if (this.#type==='daily' || info==='daily') {
             const data = [this.#getWeatherData('dailyPrecip'), this.#getWeatherData('daily')];
@@ -74,6 +77,7 @@ class WeatherDataCharts {
     }
 
     // Retrieve options for initial loading of charts
+    // Daily and hourly options are different
     #getDailyOrHourlyOptions() {
         if (this.#type==='daily') {
             const config = {
@@ -284,6 +288,7 @@ class WeatherDataCharts {
         this.#chart.update();
     }
 
+    // Inserts appropriate weather dataset for each chart
     #getWeatherData(info) {
         let data = {};
         switch (info) {
@@ -553,6 +558,7 @@ class WeatherDataCharts {
         return data;
     }
 
+    // Cahrts must be destroyed before rendering a new one
     destroy() {
         this.#chart.destroy();
     }

@@ -28,12 +28,14 @@ import { getToggleTemp, clearDom } from './utilities';
         })
     });
 
+    // Toggle switch imperial/metric
     changeTempBtn.addEventListener('click', () => {
         if (render)
             render.changeImperialMetric(getToggleTemp());
         else changeTempBtn.checked ? console.log('metric') : console.log('imperial');
     });
 
+    // Get location from input
     async function getLocationByInput() {
         try {
             startLoader(true);
@@ -51,6 +53,7 @@ import { getToggleTemp, clearDom } from './utilities';
         }
     }
 
+    // Get location from device
     async function getLocationByDevice(pos) {
         let { latitude, longitude } = pos.coords;
         try {
@@ -74,6 +77,7 @@ import { getToggleTemp, clearDom } from './utilities';
         console.log(err);
     }
 
+    // Show/hide spinner whilerendering data
     function startLoader(load) {
         const loader = document.querySelector('#loader');
         const weatherPic = document.querySelector('#parallax-pic');

@@ -18,6 +18,7 @@ class RenderWeatherData {
     #hourlyWeatherChart;
     #dailyWeatherChart;
 
+    // Calls other functions to render weather data
     async renderWeather() {
         if (this.#dailyWeatherChart || this.#hourlyWeatherChart) {
             this.deleteCharts();
@@ -30,6 +31,7 @@ class RenderWeatherData {
         this.#renderHourlyWeatherData(hourly, 0);
     }
 
+    // Renders weather data to the current weather div
     #renderMainWeatherData(current, alerts, tz) {
         const { temp, weather, dt } = current;
         const parentDiv = document.querySelector('#parallax-pic');
@@ -64,6 +66,8 @@ class RenderWeatherData {
         conditionImg.title = weather[0].description;
         let time = utilities.getDate(dt, tz);
         date.textContent = `${time.time}, ${time.day}`;
+
+        // Renders alerts if there are any
         if (alerts) {
             const alertImg = document.createElement('h1');
             alertImg.setAttribute('class', 'text-warning bi bi-exclamation-triangle-fill text-center');
@@ -74,6 +78,8 @@ class RenderWeatherData {
         }
     }
 
+    // Renders extra info for current weather
+    // Calls generic function that will render each div appropriately with different info
     #renderCurrentWeatherData(current) {
         const { feels_like, pressure, humidity, clouds, wind_speed, uvi } = current;
         this.#renderCurrentWeatherDiv('Feels Like', 'bi bi-thermometer', '.current-feels-like-div', `${Math.round(feels_like)}°`);
@@ -84,6 +90,7 @@ class RenderWeatherData {
         this.#renderCurrentWeatherDiv('UV Index', 'bi bi-brightness-high', '.current-uv-div', uvi);
     }
 
+    // Renders the hourly chart and weather icons
     #renderHourlyWeatherData(hourly, tz) {
         const hourlyCtx = document.querySelector('#hourly-chart');
         this.#hourlyWeatherChart = new WeatherDataCharts(hourly,tz,hourlyCtx,'hourly',utilities.getToggleTemp());
@@ -103,6 +110,7 @@ class RenderWeatherData {
         });
     }
 
+    // Renders the daily chart and weather icons
     #renderDailyWeatherData(daily, tz) {
         const ctx = document.querySelector('#daily-chart');
         this.#dailyWeatherChart = new WeatherDataCharts(daily,tz,ctx,'daily');
@@ -120,9 +128,12 @@ class RenderWeatherData {
             div.append(img);
             c2ico.append(div);
         });
+        // Render data to modal
         this.#renderDailyModal(daily);
     }
 
+    // Grabs weather image for background
+    // Fallbacks to a non-API source due to limited API calls
     async renderWeatherHeaderImage(current) {
         const { weather } = current;
         const div = document.querySelector('#parallax-pic');
@@ -138,6 +149,8 @@ class RenderWeatherData {
         } else div.style.backgroundImage = `url("https://source.unsplash.com/random/?${weather[0].description}")`;
     }
 
+    // Generic function to create card divs for current weather
+    // Eliminates need to repeat the creation of dom elements for the current weather section
     #renderCurrentWeatherDiv(label, icon, parent, data, windMetric) {
         const addLabel = document.createElement('h6');
         const addIcon = document.createElement('h4');
@@ -171,6 +184,7 @@ class RenderWeatherData {
         article.append(parentDiv);
     }
 
+    // Renders data for alert modal
     #renderAlertModal(data) {
         const parent = document.querySelector('.alert-body');
         data.forEach((alerts) => {
@@ -195,6 +209,7 @@ class RenderWeatherData {
         })
     }
 
+    // Renders data for daily forecast modal
     #renderDailyModal(daily) {
         const forecast = document.querySelector('.daily-body')
         daily.forEach((day) => {
@@ -219,6 +234,7 @@ class RenderWeatherData {
             weatherDesc.setAttribute('class', 'card-title');
             tempDiv.setAttribute('class','d-flex justify-content-center');
 
+            // Render modal data 
             const precip = this.#renderWeatherModalData(`${Math.round(pop*100)}%`,'Precipitation','bi bi-umbrella-fill');
             let rainAmount;
             if (rain) {
@@ -249,6 +265,9 @@ class RenderWeatherData {
         });
     }
 
+    // Generic function for daily forecast modal that creates generic divs for different data
+    // Eliminates need to repeat the same div creations multiple times
+    // Called from function above
     #renderWeatherModalData(data, label, img) {
         const div = document.createElement('div');
         const p = document.createElement('p');
@@ -263,15 +282,18 @@ class RenderWeatherData {
         return div;
     }
 
+    // Called when changing charts for the hourly chart
     updateCharts(val) {
         this.#hourlyWeatherChart.updateChart(val);
     }
 
+    // Called when retrieving/updating new weather info
     deleteCharts() {
         this.#dailyWeatherChart.destroy();
         this.#hourlyWeatherChart.destroy();
     }
 
+    // Flips weather data from imperial to metric and vice versa
     changeImperialMetric(tmp) {
         const { current } = this.#weatherData;
         current.temp = utilities.convertFahrenheitCelsius(current.temp, tmp);
