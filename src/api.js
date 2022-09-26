@@ -48,12 +48,11 @@ async function getWeatherHeaderImage(desc) {
         const response = await fetch(url);
         if (response.status===200) {
             let imgs = await response.json();
-            console.log(imgs)
             obj = {
                 img: imgs.results[num].urls.full,
                 owner: imgs.results[num].user.links.html,
                 name: imgs.results[num].user.name
-            }
+            };
             return obj;
         } else return null;
     } catch (err) {

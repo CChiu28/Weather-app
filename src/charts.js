@@ -107,7 +107,6 @@ class WeatherDataCharts {
                     tempAxis: {
                         position: 'left',
                         beginAtZero: false,
-                        // display: false,
                         ticks: {
                             display: false,
                         },
@@ -178,8 +177,6 @@ class WeatherDataCharts {
 
     // Update chart layout when different dataset is loaded
     updateChart(info) {
-        // console.log(this.#chart.scales);
-        // let scales = this.#chart.scales.y;
         this.#chart.data.datasets.pop();
         if (info==='precip') {
             this.#chart.data.datasets.pop();
@@ -260,7 +257,6 @@ class WeatherDataCharts {
                 tempAxis: {
                     position: 'left',
                     beginAtZero: false,
-                    // display: false,
                     ticks: {
                         display: false,
                     },

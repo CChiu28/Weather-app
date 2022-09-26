@@ -2,8 +2,8 @@ import './style.css';
 import './scss/style.scss';
 import * as bootstrap from 'bootstrap';
 import { getCoordinates, getLocationName, getWeather } from './api.js';
-import { RenderWeatherData, renderWeatherHeaderImage } from './renderWeather.js';
-import { getToggleTemp } from './utilities';
+import { RenderWeatherData } from './renderWeather.js';
+import { getToggleTemp, clearDom } from './utilities';
 
 (function init() {
     const submitBtn = document.querySelector('#submitLocation');
@@ -16,10 +16,7 @@ import { getToggleTemp } from './utilities';
         // e.preventDefault();
         if (render) {
             render.deleteCharts();
-            document.querySelector('#hourly-chart-icons').innerHTML = '';
-            document.querySelector('#chart2icons').innerHTML = '';
-            document.querySelector('#current-weather').innerHTML = '';
-            document.querySelector('#parallax-pic').removeChild(document.querySelector('#parallax-pic').firstChild);
+            clearDom();
         }
         getLocationByInput();
     });
@@ -38,7 +35,6 @@ import { getToggleTemp } from './utilities';
     });
 
     async function getLocationByInput() {
-        // const locationInput = document.querySelector('#autocomplete');
         try {
             startLoader(true);
             const { lat, lon, name, state, country } = await getCoordinates(inputLocation.value);
