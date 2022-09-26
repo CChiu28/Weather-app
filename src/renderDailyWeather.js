@@ -48,7 +48,7 @@ class RenderDailyWeather {
 			const infoCol1 = document.createElement('div');
 			const infoCol2 = document.createElement('div');
 
-			card.classList.add('card','m-4');
+			card.classList.add('card','m-2');
 			cardBody.classList.add('card-body');
 			cardDay.classList.add('card-header','display-6');
 			cardTemp.classList.add('card-title','align-self-center');
@@ -99,6 +99,7 @@ class RenderDailyWeather {
 		div.setAttribute('class','d-flex justify-content-start');
 		p.textContent = data;
 		dataLabel.textContent = `${label}: `;
+		dataLabel.setAttribute('class','me-2');
 		labelImg.setAttribute('class', `${img} me-2`);
 		div.append(labelImg,dataLabel,p);
 		return div;

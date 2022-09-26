@@ -1,5 +1,4 @@
 import * as utilities from './utilities.js';
-import { WeatherDataCharts } from './charts.js';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { getWeatherHeaderImage } from './api.js';
 import RenderDailyWeather from './renderDailyWeather.js';
@@ -89,12 +88,12 @@ class RenderWeatherData {
     // Calls generic function that will render each div appropriately with different info
     #renderCurrentWeatherData(current) {
         const { feels_like, pressure, humidity, clouds, wind_speed, uvi } = this.#weatherData.current;
-        this.#renderCurrentWeatherDiv('Feels Like', 'bi bi-thermometer', '.current-feels-like-div', `${Math.round(feels_like)}°`);
-        this.#renderCurrentWeatherDiv('Pressure', 'bi bi-speedometer', '.current-pressure-div', `${pressure}`);
-        this.#renderCurrentWeatherDiv('Humidity', 'bi bi-moisture', '.current-humidity-div', `${Math.round(humidity)}%`);
-        this.#renderCurrentWeatherDiv('Clouds', 'bi bi-clouds', '.current-cloud-div', `${Math.round(clouds)}%`);
-        this.#renderCurrentWeatherDiv('Wind Speed', 'bi bi-wind', '.current-wind-div', `${Math.round(wind_speed)}`, `${utilities.getMphKm(utilities.getToggleTemp())}`);
-        this.#renderCurrentWeatherDiv('UV Index', 'bi bi-brightness-high', '.current-uv-div', uvi);
+        this.#renderCurrentWeatherDiv('Feels Like', 'bi bi-thermometer', `${Math.round(feels_like)}°`);
+        this.#renderCurrentWeatherDiv('Pressure', 'bi bi-speedometer', `${pressure}`);
+        this.#renderCurrentWeatherDiv('Humidity', 'bi bi-moisture', `${Math.round(humidity)}%`);
+        this.#renderCurrentWeatherDiv('Clouds', 'bi bi-clouds', `${Math.round(clouds)}%`);
+        this.#renderCurrentWeatherDiv('Wind Speed', 'bi bi-wind', `${Math.round(wind_speed)}`, `${utilities.getMphKm(utilities.getToggleTemp())}`);
+        this.#renderCurrentWeatherDiv('UV Index', 'bi bi-brightness-high', uvi);
     }
 
     // Grabs weather image for background
@@ -107,16 +106,19 @@ class RenderWeatherData {
         let imgObj = await getWeatherHeaderImage(weather[0].description);
         if (imgObj!=null) {
             div.style.backgroundImage = `url(${imgObj.img})`;
+            const ownerDiv = document.createElement('div');
             const owner = document.createElement('p');
-            owner.setAttribute('class', 'position-absolute bottom-0 end-0 me-3');
+            ownerDiv.setAttribute('class', 'position-absolute bottom-0 end-0 m-3 bg-light');
+            owner.setAttribute('class','m-0');
             owner.innerHTML = `Photo by <a href="${imgObj.owner}?utm_source=weather-app&utm_medium=referral">${imgObj.name}</a> on <a href="https://unsplash.com/?utm_source=weather-app&utm_medium=referral">Unsplash</a>`;
-            div.append(owner);
+            ownerDiv.append(owner);
+            div.append(ownerDiv);
         } else div.style.backgroundImage = `url("https://source.unsplash.com/random/?${weather[0].description}")`;
     }
 
     // Generic function to create card divs for current weather
     // Eliminates need to repeat the creation of dom elements for the current weather section
-    #renderCurrentWeatherDiv(label, icon, parent, data, windMetric) {
+    #renderCurrentWeatherDiv(label, icon, data, windMetric) {
         const addLabel = document.createElement('h6');
         const addIcon = document.createElement('h4');
         const addData = document.createElement('p');
@@ -129,7 +131,7 @@ class RenderWeatherData {
         div.setAttribute('class', 'card-body d-flex flex-column align-items-center');
         addLabel.textContent = label;
         addLabel.setAttribute('class', 'fw-bold m-auto');
-        addIcon.setAttribute('class', `${icon} m-auto`);
+        addIcon.setAttribute('class', `${icon} m-auto text-secondary`);
         addData.setAttribute('class', 'display-6 m-auto');
         if (label==='Wind Speed') {
             const speedDiv = document.createElement('div');

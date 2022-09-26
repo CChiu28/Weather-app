@@ -34,7 +34,6 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-    "@popperjs/core": "^2.11.6",
     "bootstrap": "^5.2.0",
     "bootstrap-icons": "^1.9.1",
     "chart.js": "^3.9.1",

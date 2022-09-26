@@ -2,6 +2,7 @@
 #parallax-pic {
     height: 600px;
     background-attachment: fixed;
+    background-position: bottom;
     background-size: cover;
 }
 

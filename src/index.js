@@ -1,11 +1,9 @@
 import './style.css';
 import './scss/style.scss';
-import * as bootstrap from 'bootstrap';
+import { Modal, Button } from 'bootstrap';
 import { getCoordinates, getLocationName, getWeather } from './api.js';
 import { RenderWeatherData } from './renderWeather.js';
-import { getToggleTemp, clearDom, changeImperialMetric } from './utilities';
-import RenderDailyWeather from './renderDailyWeather';
-import RenderHourlyWeather from './renderHourlyWeather';
+import { getToggleTemp, clearDom } from './utilities';
 
 (function init() {
     const submitBtn = document.querySelector('#submitLocation');

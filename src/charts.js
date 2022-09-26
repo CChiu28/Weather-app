@@ -1,4 +1,4 @@
-import Chart from 'chart.js/auto';
+import { BarController, BarElement, CategoryScale, Chart, Filler, LinearScale, LineController, LineElement, PointElement } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import * as utilities from './utilities.js';
 
@@ -28,6 +28,7 @@ class WeatherDataCharts {
     // Main function that grabs necessary weather data
     // Creates charts and calls necessary function to populate data as necessary
     createChartjs() {
+        Chart.register(CategoryScale,LinearScale,BarController,BarElement,LineController,LineElement,PointElement,Filler);
         this.#times = this.#weather.map(({ dt }) => dt);
         this.#temps = this.#weather.map(({ temp }) => temp);
         this.#precip = this.#weather.map(({ pop }) => Math.round(pop*100));
