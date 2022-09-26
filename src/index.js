@@ -3,7 +3,9 @@ import './scss/style.scss';
 import * as bootstrap from 'bootstrap';
 import { getCoordinates, getLocationName, getWeather } from './api.js';
 import { RenderWeatherData } from './renderWeather.js';
-import { getToggleTemp, clearDom } from './utilities';
+import { getToggleTemp, clearDom, changeImperialMetric } from './utilities';
+import RenderDailyWeather from './renderDailyWeather';
+import RenderHourlyWeather from './renderHourlyWeather';
 
 (function init() {
     const submitBtn = document.querySelector('#submitLocation');
@@ -30,9 +32,9 @@ import { getToggleTemp, clearDom } from './utilities';
 
     // Toggle switch imperial/metric
     changeTempBtn.addEventListener('click', () => {
-        if (render)
+        if (render) {
             render.changeImperialMetric(getToggleTemp());
-        else changeTempBtn.checked ? console.log('metric') : console.log('imperial');
+        } else changeTempBtn.checked ? console.log('metric') : console.log('imperial');
     });
 
     // Get location from input
