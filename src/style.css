@@ -21,6 +21,7 @@
 }
 .daily-chart-wrapper {
     height: 420px;
+    cursor: pointer;
 }
 
 .d-chart-wrapper {

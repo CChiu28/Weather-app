@@ -6,6 +6,7 @@ async function getWeather(lat, lon, tmp) {
     try {
         const response = await fetch(url);
         const weather = await response.json();
+        // console.log('api',weather.current)
         return weather;
     } catch (err) {
         // do extra stuff here

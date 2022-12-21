@@ -16,8 +16,6 @@ class RenderWeatherData {
     #name;
     #state;
     #country;
-    #hourlyWeatherChart;
-    #dailyWeatherChart;
     #renderDaily;
     #renderHourly;
 
@@ -79,6 +77,7 @@ class RenderWeatherData {
             alertImg.setAttribute('class', 'text-warning bi bi-exclamation-triangle-fill text-center');
             alertImg.setAttribute('data-bs-toggle', 'modal');
             alertImg.setAttribute('data-bs-target', '#alert-modal');
+            alertImg.style.cursor = 'pointer';
             imgWrapper.append(alertImg);
             this.#renderAlertModal(this.#weatherData.alerts);
         }
@@ -106,13 +105,10 @@ class RenderWeatherData {
         let imgObj = await getWeatherHeaderImage(weather[0].description);
         if (imgObj!=null) {
             div.style.backgroundImage = `url(${imgObj.img})`;
-            const ownerDiv = document.createElement('div');
             const owner = document.createElement('p');
-            ownerDiv.setAttribute('class', 'position-absolute bottom-0 end-0 m-3 bg-light');
-            owner.setAttribute('class','m-0');
+            owner.setAttribute('class', 'position-absolute bottom-0 end-0 m-2 p-1 bg-light');
             owner.innerHTML = `Photo by <a href="${imgObj.owner}?utm_source=weather-app&utm_medium=referral">${imgObj.name}</a> on <a href="https://unsplash.com/?utm_source=weather-app&utm_medium=referral">Unsplash</a>`;
-            ownerDiv.append(owner);
-            div.append(ownerDiv);
+            div.append(owner);
         } else div.style.backgroundImage = `url("https://source.unsplash.com/random/?${weather[0].description}")`;
     }
 
@@ -207,15 +203,6 @@ class RenderWeatherData {
         });
         this.renderWeather();
     }
-
-    // get dailyWeatherChart() {
-    //     return this.#dailyWeatherChart;
-    // }
-
-    // get hourlyWeatherChart() {
-    //     return this.#hourlyWeatherChart;
-    // }
-
 }
 
 export {
